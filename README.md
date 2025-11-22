@@ -2,7 +2,7 @@
 
 A lightweight social platform designed for sharing quick text posts. This project was structurally and conceptually built under the guidance of **Professor DongYeop Hwang**.
 
-\![Esil Radiru](https://i.pinimg.com/736x/e7/36/28/e736286863b87dd4804086c09fcfc922.jpg)
+![Esil Radiru](https://i.pinimg.com/736x/e7/36/28/e736286863b87dd4804086c09fcfc922.jpg)
 
 ## Features
 
@@ -15,7 +15,7 @@ A lightweight social platform designed for sharing quick text posts. This projec
 
 ## Acknowledgment and Guidance
 
-This project was developed with the foundational support, architectural insights, and academic guidance provided by **Professor DongYeop Hwang** (GitHub: `bc8c`).
+This project was developed with the foundational support, architectural insights, and academic guidance provided by **Professor DongYeop Hwang** (GitHub: [`bc8c`](https://github.com/bc8c)).
 
 -----
 
