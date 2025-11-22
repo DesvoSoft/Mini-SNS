@@ -1,0 +1,153 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(-45deg, #74ebd5, #4e8bd1, #74ebd5);
+  background-size: 400% 400%;
+  animation: gradientShift 30s ease infinite;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+h1 {
+  text-align: center;
+  color: #f0ffff;
+  text-shadow: 2px 4px 12px rgba(0, 0, 0, 0.55);
+}
+
+a {
+  color: #bdf2f8;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+a:hover {
+  color: #3050a7;
+}
+
+main {
+  padding: 30px;
+  margin: 40px;
+  background-color: rgb(100, 100, 100);
+  border-radius: 18px;
+  max-width: 900px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(6px); /* efecto de desenfoque elegante */
+}
+
+/* Login container */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+form label {
+  font-weight: 600;
+  color: #f0ffff;
+}
+
+form input {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+}
+
+form input:focus {
+  box-shadow: 0 0 6px #74ebd5;
+}
+
+form button {
+  padding: 12px;
+  background: #4e8bd1;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+form button:hover {
+  background: #3050a7;
+}
+
+/* Logout button */
+
+a[href="/logout"] {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #ff4d4d;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease;
+}
+
+a[href="/logout"]:hover {
+  background: #d93636;
+}
+
+footer {
+  background-color: #222; /* Fondo oscuro */
+  color: #f1f1f1; /* Texto claro */
+  text-align: center; /* Centrar contenido */
+  padding: 15px 0; /* Espaciado vertical */
+  font-size: 0.9rem; /* Tamaño de fuente más discreto */
+  position: fixed; /* Fijar al fondo */
+  bottom: 0; /* Ubicar en la parte inferior */
+  width: 100%; /* Que ocupe todo el ancho */
+  border-top: 2px solid #444; /* Línea superior para separar */
+}
+
+header {
+  background-color: #2c3e50; /* Fondo azul oscuro elegante */
+  color: #ecf0f1; /* Texto claro */
+  padding: 15px 20px; /* Espaciado interno */
+  display: flex; /* Layout flexible */
+  justify-content: space-between; /* Separar título y navegación */
+  align-items: center; /* Centrar verticalmente */
+  border-bottom: 2px solid #34495e; /* Línea inferior */
+}
+
+header h1 {
+  margin: 0; /* Quitar margen por defecto */
+  font-size: 1.5rem; /* Tamaño de fuente */
+}
+
+header nav a {
+  color: #ecf0f1; /* Links claros */
+  text-decoration: none; /* Sin subrayado */
+  margin-left: 15px; /* Espaciado entre links */
+  font-weight: bold; /* Texto más marcado */
+  transition: color 0.3s; /* Animación suave */
+}
+
+header nav a:hover {
+  color: #1abc9c; /* Color verde al pasar el mouse */
+}
+
+footer p {
+  margin: 5px 0; /* Espaciado entre párrafos */
+}
+
+/* Animación del gradiente */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Posts - Mini SNS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/bg.css" />
+    <!-- <link rel="stylesheet" href="./css/posts.css" /> -->
+  </head>
+  <body class="animated-bg text-white min-h-screen relative pb-20 pt-16">
+    <%- include('components/_header', { username: username }) %>
+    <main
+      class="p-8 m-10 bg-gray-600/80 rounded-xl max-w-4xl mx-auto shadow-2xl backdrop-blur-md"
+    >
+      <h1 class="text-4xl font-extrabold text-center mb-10 text-cyan-200">
+        Community Posts
+      </h1>
+
+      <div class="flex justify-between items-center mb-8">
+        <a
+          href="/"
+          class="py-2 px-4 bg-gray-500 hover:bg-gray-700 rounded-lg text-white font-semibold transition-colors shadow-md"
+        >
+          ← Back to Home
+        </a>
+        <a
+          href="/write"
+          class="py-2 px-4 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-semibold transition-colors shadow-md"
+        >
+          Write New Post
+        </a>
+      </div>
+
+      <div class="space-y-6">
+        <% if (posts && posts.length > 0) { %> <% posts.forEach(function(post) {
+        %> <%- include("feed", {post: post}) %> <% }); %> <% } else { %>
+        <p class="text-center text-xl text-gray-400 pt-10">
+          No hay posts disponibles aún
+        </p>
+        <% } %>
+      </div>
+    </main>
+
+    <%- include('components/_footer') %>
+  </body>
+</html>

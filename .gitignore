@@ -1,0 +1,30 @@
+# ----------------------------------------
+# DEPENDENCIAS DE NODE
+# ----------------------------------------
+# Dependencias locales (generadas al ejecutar npm install)
+/node_modules
+
+# Logs de npm
+npm-debug.log*
+.npm
+
+# ----------------------------------------
+# ARCHIVOS DE ENTORNO Y SEGURIDAD
+# ----------------------------------------
+# Archivos de variables de entorno (contienen claves secretas)
+.env
+.env.*
+config/local.js
+
+# ----------------------------------------
+# ARTEFACTOS DEL SERVIDOR/USUARIO
+# ----------------------------------------
+# Archivos de VS Code (opcional, si no quieres compartir configuraciones de workspace)
+.vscode/
+
+# Archivos que se crean al subir imágenes (si implementas la subida)
+/public/uploads
+
+# Carpetas temporales o de compilación (si decides usar Webpack/Babel en el futuro)
+/dist
+/tmp

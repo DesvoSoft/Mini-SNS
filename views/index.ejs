@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mini SNS - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <link rel="stylesheet" href="./css/global.css" /> -->
+    <link rel="stylesheet" href="./css/bg.css" />
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Quantico -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Orbitron (Titles) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Orbitron:wght@400..900&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .font-title-gamer {
+        font-family: "Audiowide", sans-serif;
+      }
+      .font-body-gamer {
+        font-family: "Quantico", sans-serif;
+      }
+    </style>
+  </head>
+  <body
+    class="animated-bg text-white min-h-screen relative pt-16 font-body-gamer"
+  >
+    <%- include('components/_header', { username: username }) %>
+
+    <main
+      class="p-8 m-10 bg-gray-900/40 rounded-xl max-w-2xl mx-auto shadow-2xl backdrop-blur-md"
+    >
+      <h1 class="text-3xl text-center font-extrabold mb-4 font-title-gamer">
+        Welcome to Mini SNS<% if (username) { %>, <%= username %> <% } %>
+      </h1>
+
+      <!-- Error si usuario o contraseña son incorrectos -->
+      <% if (loginError) { %>
+      <p class="text-red-400 font-bold text-center mb-4"><%= loginError %></p>
+      <% } %>
+
+      <p class="text-center mb-6 font-body-gamer">
+        Social media playground with Tailwind
+      </p>
+
+      <% if (!username) { %>
+      <div class="bg-gray-700/50 p-6 rounded-lg shadow-inner font-body-gamer">
+        <h2 class="text-2xl font-semibold text-center mb-6">Login</h2>
+        <form
+          method="POST"
+          action="/login"
+          class="flex flex-col gap-4 max-w-xs mx-auto"
+        >
+          <label for="username" class="font-semibold text-gray-100"
+            >Username</label
+          >
+          <input
+            type="text"
+            name="username"
+            placeholder="Enter username"
+            required
+            class="p-2 border border-gray-500 rounded-md text-lime-400 bg-black/50 focus:ring-2 focus:ring-lime-300 outline-none font-mono"
+            autofocus
+          />
+
+          <label for="password" class="font-semibold text-gray-100"
+            >Password</label
+          >
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter password"
+            required
+            class="p-2 border border-gray-500 rounded-md text-lime-400 bg-black/50 focus:ring-2 focus:ring-lime-300 outline-none font-mono"
+          />
+
+          <button
+            type="submit"
+            class="p-3 mt-4 bg-lime-500 hover:bg-lime-600 text-white font-bold rounded-md transition-colors shadow-lg"
+          >
+            Login
+          </button>
+        </form>
+      </div>
+      <% } %> <% if (username) { %>
+      <h2 class="text-center text-xl font-semibold mt-8 mb-4">Available</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a
+          href="/write"
+          class="text-center p-4 bg-lime-500 hover:bg-lime-600 rounded-lg font-bold transition-colors shadow-md"
+        >
+          Write a Post
+        </a>
+        <a
+          href="/posts"
+          class="text-center p-4 bg-lime-500 hover:bg-lime-600 rounded-lg font-bold transition-colors shadow-md"
+        >
+          View Posts
+        </a>
+        <a
+          href="/profile"
+          class="text-center p-4 bg-lime-500 hover:bg-lime-600 rounded-lg font-bold transition-colors shadow-md"
+        >
+          Profile
+        </a>
+      </div>
+      <% } else { %>
+      <h2 class="text-center text-xl font-semibold mt-8 mb-4">
+        Log in required
+      </h2>
+      <% } %>
+    </main>
+    <%- include('components/_footer') %>
+  </body>
+</html>

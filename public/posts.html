@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Posts - Mini SNS</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/posts.css" />
+  </head>
+  <body>
+    <a href="/logout">Logout</a>
+    <h1>📋 Recent Posts</h1>
+
+    <!-- Container for all posts -->
+    <div class="post-list">
+      <!-- Example post 1 -->
+      <div class="post">
+        <strong>Alice</strong><br />
+        <span>Hello, this is my first post!</span>
+
+        <div class="comment-count">Comments (0)</div>
+
+        <input
+          type="text"
+          class="comment-input"
+          placeholder="Write a comment..."
+        />
+        <button class="add-comment">Add Comment</button>
+
+        <div class="comments"></div>
+      </div>
+      <hr />
+
+      <!-- Example post 2 -->
+      <div class="post">
+        <strong>Bob</strong><br />
+        <span>Today I learned how to create a form in HTML.</span>
+
+        <div class="comment-count">Comments (0)</div>
+
+        <input
+          type="text"
+          class="comment-input"
+          placeholder="Write a comment..."
+        />
+        <button class="add-comment">Add Comment</button>
+        <div class="comments"></div>
+      </div>
+      <hr />
+    </div>
+
+    <br />
+
+    <!-- Link back to home -->
+    <a href="/">← Back to Home</a>
+  </body>
+
+  <script src="js/posts.js"></script>
+</html>

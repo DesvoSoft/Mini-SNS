@@ -1,0 +1,40 @@
+form {
+  width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #98bcff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+input,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #78efff;
+  border-radius: 3px;
+  background-color: rgb(147, 179, 177);
+  color: white;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.55);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: white;
+  opacity: 1;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+}
+
+button:hover {
+  background-color: #2980b9;
+}

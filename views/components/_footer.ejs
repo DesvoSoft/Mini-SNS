@@ -1,0 +1,15 @@
+<footer
+  class="bg-gray-900 text-gray-300 text-center p-3 text-sm fixed bottom-0 w-full border-t-2 border-gray-700"
+>
+  <p>감사합니다 Profesor Hwang - Dana - K-Lab</p>
+  <p id="datetime"></p>
+</footer>
+
+<script>
+  function updateDateTime() {
+    const now = new Date();
+    document.getElementById("datetime").textContent = now.toLocaleString();
+  }
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
+</script>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Profile - Mini SNS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./css/bg.css" />
+  </head>
+  <body class="animated-bg text-white min-h-screen relative pb-20 pt-16">
+    <%- include('components/_header', { username: username }) %>
+
+    <main
+      class="p-8 m-10 bg-gray-600/80 rounded-xl max-w-2xl mx-auto shadow-2xl backdrop-blur-md"
+    >
+      <h1 class="text-4xl font-extrabold text-center mb-10 text-cyan-200">
+        👤 <%= username %>
+      </h1>
+
+      <div class="flex justify-start mb-8">
+        <a
+          href="/"
+          class="py-2 px-4 bg-gray-500 hover:bg-gray-700 rounded-lg text-white font-semibold transition-colors shadow-md"
+        >
+          ← Go Back Home
+        </a>
+      </div>
+
+      <div
+        class="bg-gray-700/70 p-8 rounded-xl shadow-lg border border-gray-600 space-y-4"
+      >
+        <h2
+          class="text-2xl font-semibold text-gray-100 border-b border-gray-500 pb-2"
+        >
+          Account Details
+        </h2>
+
+        <p class="text-lg text-gray-300">
+          <span class="font-bold text-cyan-300 w-32 inline-block"
+            >Username:</span
+          >
+          <%= username %>
+        </p>
+
+        <p class="text-lg text-gray-300">
+          <span class="font-bold text-cyan-300 w-32 inline-block"
+            >Member Since:</span
+          >
+          2024-05-15 (Static)
+        </p>
+
+        <p class="text-lg text-gray-300">
+          <span class="font-bold text-cyan-300 w-32 inline-block"
+            >Total Posts:</span
+          >
+          4 (Mock Count)
+        </p>
+
+        <div class="pt-6 border-t border-gray-500 mt-6">
+          <p class="text-gray-400 italic">
+            This is your private profile view. You can add editing options here
+            later.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <%- include('components/_footer') %>
+  </body>
+</html>
