@@ -2,7 +2,7 @@
 
 A lightweight social platform designed for sharing quick text posts. This project was structurally and conceptually built under the guidance of **Professor DongYeop Hwang**.
 
-![Esil Radiru](https://i.pinimg.com/736x/e7/36/28/e736286863b87dd4804086c09fcfc922.jpg)
+![Esil Radiru And Frieren]([https://i.pinimg.com/736x/e7/36/28/e736286863b87dd4804086c09fcfc922.jpg](https://lh3.googleusercontent.com/gg-dl/ABS2GSljHdc3pMp68LJunO11a2PrLqKNYJwtc1uND_LFXbiID4sxcv-dPm3VjLrM3f4OEIivmLylZRfdPpLAXfoE2jTxex0JxgbM-QjvDXymTF-7wRmTnT2oMtf_YGO_RbyK1w4KBEoTtNHwVgo9tKjGGnpc8HLKpTmq3x8nC-H7GrVtpQhF=s1024-rj))
 
 ## Features
 
