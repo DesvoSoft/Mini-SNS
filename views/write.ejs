@@ -6,64 +6,47 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google font component class:font-body-gamer -->
     <%- include('components/_gfont.ejs') %>
+    <%- include('components/_ui-helpers') %>
     <link rel="stylesheet" href="./css/bg.css" />
     <!-- <link rel="stylesheet" href="./css/write.css" /> -->
   </head>
-  <body
-    class="animated-bg text-white min-h-screen relative pb-20 pt-16 font-body-gamer"
-  >
+  <body class="app-body">
     <%- include('components/_header', { username: username }) %>
 
-    <main
-      class="p-8 m-10 bg-gray-600/80 rounded-xl max-w-2xl mx-auto shadow-2xl backdrop-blur-md"
-    >
-      <h1 class="text-4xl font-extrabold text-center mb-10 text-cyan-200">
-        Write a New Post
-      </h1>
+    <main class="page-shell page-shell--narrow">
+      <h1 class="page-title">Write a New Post</h1>
 
-      <div class="flex justify-start mb-8">
-        <a
-          href="/"
-          class="py-2 px-4 bg-gray-500 hover:bg-gray-700 rounded-lg text-white font-semibold transition-colors shadow-md"
-        >
+      <div class="action-row action-row--left">
+        <a href="/" class="btn btn-secondary">
           ← Back to Home
         </a>
       </div>
 
-      <div
-        class="bg-gray-700/70 p-8 rounded-xl shadow-lg border border-gray-600"
-      >
+      <%- include('components/_categories', { categories: categories }) %>
+
+      <div class="content-card">
         <form action="#" method="post" class="space-y-6">
           <div>
-            <label for="writer" class="block font-semibold text-gray-100 mb-2"
-              >Posting as:</label
-            >
-            <p
-              class="p-3 bg-gray-800 text-cyan-300 rounded-md border border-gray-600 font-medium"
-            >
+            <label for="writer" class="input-label">Posting as:</label>
+            <p class="input-ghost">
               <%= username %>
             </p>
             <input type="hidden" name="writer" value="<%= username %>" />
           </div>
 
           <div>
-            <label for="content" class="block font-semibold text-gray-100 mb-2"
-              >Your Post:</label
-            >
+            <label for="content" class="input-label">Your Post:</label>
             <textarea
               id="content"
               name="content"
               rows="5"
               placeholder="Hello, lets post!"
               required
-              class="w-full p-3 bg-gray-800 border border-gray-500 rounded-md text-white focus:ring-2 focus:ring-[#74ebd5] outline-none"
+              class="textarea-primary"
             ></textarea>
           </div>
 
-          <button
-            type="submit"
-            class="w-full p-3 bg-lime-600 hover:bg-lime-700 text-white font-semibold rounded-md transition-colors shadow-lg"
-          >
+          <button type="submit" class="btn-success">
             Post
           </button>
         </form>

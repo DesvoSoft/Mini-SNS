@@ -7,6 +7,14 @@ const morgan = require("morgan"); // --- Logs HTTP en consola
 const cookieParser = require("cookie-parser"); // --- Manejo de cookies
 const session = require("express-session"); // --- Manejo de sesiones
 
+const categories = [
+  "General",
+  "Announcements",
+  "Tips & Tricks",
+  "Feedback",
+  "Releases",
+];
+
 // =============================== CONFIGURACION EJS ===============================
 app.set("view engine", "ejs"); // --- EJS motor de plantillas
 app.set("views", path.join(__dirname, "views"));
@@ -99,7 +107,7 @@ app.get("/posts", (req, res) => {
   ];
 
   if (req.session.username) {
-    res.render("posts", { posts, username: req.session.username }); // --- Renderiza posts.ejs con lista
+    res.render("posts", { posts, username: req.session.username, categories }); // --- Renderiza posts.ejs con lista
   } else {
     res.redirect("/");
   }
@@ -108,7 +116,7 @@ app.get("/posts", (req, res) => {
 // Write
 app.get("/write", (req, res) => {
   if (req.session.username) {
-    res.render("write", { username: req.session.username });
+    res.render("write", { username: req.session.username, categories });
     // res.sendFile(path.join(__dirname, "public", "write.html"));
   } else {
     res.redirect("/");

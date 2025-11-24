@@ -6,34 +6,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google font component class:font-body-gamer -->
     <%- include('components/_gfont.ejs') %>
+    <%- include('components/_ui-helpers') %>
     <link rel="stylesheet" href="./css/bg.css" />
     <!-- <link rel="stylesheet" href="./css/posts.css" /> -->
   </head>
-  <body
-    class="animated-bg text-white min-h-screen relative pb-20 pt-16 font-body-gamer"
-  >
+  <body class="app-body">
     <%- include('components/_header', { username: username }) %>
-    <main
-      class="p-8 m-10 bg-gray-600/80 rounded-xl max-w-4xl mx-auto shadow-2xl backdrop-blur-md"
-    >
-      <h1 class="text-4xl font-extrabold text-center mb-10 text-cyan-200">
-        Community Posts
-      </h1>
+    <main class="page-shell">
+      <h1 class="page-title">Community Posts</h1>
 
-      <div class="flex justify-between items-center mb-8">
-        <a
-          href="/"
-          class="py-2 px-4 bg-gray-500 hover:bg-gray-700 rounded-lg text-white font-semibold transition-colors shadow-md"
-        >
+      <div class="action-row">
+        <a href="/" class="btn btn-secondary">
           ← Back to Home
         </a>
-        <a
-          href="/write"
-          class="py-2 px-4 bg-blue-500 hover:bg-blue-600 rounded-lg text-white font-semibold transition-colors shadow-md"
-        >
+        <a href="/write" class="btn btn-primary">
           Write New Post
         </a>
       </div>
+
+      <%- include('components/_categories', { categories: categories }) %>
 
       <div class="space-y-6">
         <% if (posts && posts.length > 0) { %> <% posts.forEach(function(post) {

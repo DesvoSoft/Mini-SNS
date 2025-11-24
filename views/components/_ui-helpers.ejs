@@ -1,0 +1,59 @@
+<style type="text/tailwindcss">
+  @layer components {
+    .app-body {
+      @apply animated-bg text-white min-h-screen relative pb-20 pt-16 font-body-gamer;
+    }
+
+    .page-shell {
+      @apply p-8 m-10 bg-gray-600/80 rounded-xl max-w-4xl mx-auto shadow-2xl backdrop-blur-md;
+    }
+
+    .page-shell--narrow {
+      @apply max-w-2xl;
+    }
+
+    .page-title {
+      @apply text-4xl font-extrabold text-center mb-10 text-cyan-200;
+    }
+
+    .action-row {
+      @apply flex justify-between items-center mb-8;
+    }
+
+    .action-row--left {
+      @apply justify-start;
+    }
+
+    .btn {
+      @apply inline-flex items-center gap-2 py-2 px-4 rounded-lg text-white font-semibold transition-colors shadow-md;
+    }
+
+    .btn-primary {
+      @apply bg-blue-500 hover:bg-blue-600;
+    }
+
+    .btn-secondary {
+      @apply bg-gray-500 hover:bg-gray-700;
+    }
+
+    .btn-success {
+      @apply w-full p-3 bg-lime-600 hover:bg-lime-700 text-white font-semibold rounded-md transition-colors shadow-lg;
+    }
+
+    .content-card {
+      @apply bg-gray-700/70 p-8 rounded-xl shadow-lg border border-gray-600;
+    }
+
+    .input-label {
+      @apply block font-semibold text-gray-100 mb-2;
+    }
+
+    .input-ghost {
+      @apply p-3 bg-gray-800 text-cyan-300 rounded-md border border-gray-600 font-medium;
+    }
+
+    .textarea-primary {
+      @apply w-full p-3 bg-gray-800 border border-gray-500 rounded-md text-white focus:ring-2 focus:ring-[#74ebd5] outline-none;
+    }
+  }
+</style>
