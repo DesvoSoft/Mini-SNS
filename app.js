@@ -3,6 +3,7 @@ const express = require("express"); // --- Framework servidor web
 const app = express();
 
 const path = require("path"); // --- Manejo de rutas y directorios
+const fs = require("fs"); // --- Lectura de archivos locales
 const morgan = require("morgan"); // --- Logs HTTP en consola
 const cookieParser = require("cookie-parser"); // --- Manejo de cookies
 const session = require("express-session"); // --- Manejo de sesiones
@@ -138,6 +139,62 @@ app.get("/write", (req, res) => {
     res.redirect("/");
   }
 });
+
+// Documentation
+app.get("/docs", (req, res) => {
+  const englishDocs = loadDocs(path.join(__dirname, "docs"));
+  const spanishDocs = loadDocs(path.join(__dirname, "docs_es"));
+
+  res.render("docs", {
+    username: req.session.username,
+    englishDocs,
+    spanishDocs,
+  });
+});
+
+function loadDocs(directoryPath) {
+  try {
+    if (!fs.existsSync(directoryPath)) {
+      return [];
+    }
+
+    return fs
+      .readdirSync(directoryPath)
+      .filter((file) => file.toLowerCase().endsWith(".md"))
+      .map((fileName) => {
+        const fullPath = path.join(directoryPath, fileName);
+        const content = fs.readFileSync(fullPath, "utf-8");
+        const parsedName = path.parse(fileName).name;
+
+        return {
+          fileName,
+          title: toTitleCase(parsedName.replace(/_/g, " ")),
+          slug: slugify(parsedName),
+          content: content.trim(),
+        };
+      })
+      .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));
+  } catch (error) {
+    console.error(`Error loading docs from ${directoryPath}:`, error);
+    return [];
+  }
+}
+
+function toTitleCase(text) {
+  return text
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+}
+
+function slugify(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "")
+    .trim();
+}
 
 // =============================== SERVIDOR ===============================
 app.listen(4000, "0.0.0.0", () => {

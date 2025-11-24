@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mini SNS - Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <%- include('components/_gfont.ejs') %>
+    <%- include('components/_ui-helpers') %>
+    <link rel="stylesheet" href="/css/bg.css" />
+    <style>
+      .doc-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1rem;
+      }
+      .doc-card {
+        background: rgba(17, 24, 39, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+        overflow: hidden;
+      }
+      .doc-card__header {
+        background: linear-gradient(90deg, #0ea5e9, #22d3ee);
+        color: #0b1120;
+        padding: 0.75rem 1rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+      .doc-card__body {
+        padding: 1rem 1.25rem 1.5rem;
+      }
+      .doc-card__body h2,
+      .doc-card__body h3,
+      .doc-card__body h4 {
+        color: #e0f2fe;
+        font-weight: 700;
+        margin-top: 1rem;
+      }
+      .doc-card__body p {
+        color: #d1d5db;
+        margin: 0.5rem 0;
+      }
+      .doc-card__body ul {
+        padding-left: 1.25rem;
+        list-style: disc;
+        color: #e5e7eb;
+      }
+      .doc-card__body code {
+        background: rgba(255, 255, 255, 0.08);
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.35rem;
+        font-family: "JetBrains Mono", monospace;
+        color: #f8fafc;
+      }
+      .doc-card__body pre {
+        background: rgba(255, 255, 255, 0.06);
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+      }
+      .language-toggle button {
+        transition: transform 150ms ease, box-shadow 150ms ease;
+      }
+      .language-toggle button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(34, 211, 238, 0.35);
+      }
+    </style>
+  </head>
+  <body class="app-body">
+    <%- include('components/_header', { username: username }) %>
+    <% const defaultLang = englishDocs.length ? 'en' : (spanishDocs.length ? 'es' : 'en'); %>
+
+    <main class="page-shell space-y-6">
+      <header class="space-y-4">
+        <p class="badge">Documentation</p>
+        <h1 class="page-title">Read project docs without leaving the app</h1>
+        <p class="text-gray-200 max-w-3xl">
+          Browse the English and Spanish documentation directly from Mini SNS. Use
+          the language toggle to switch between the translated docs and the
+          originals stored in <code>docs_es</code>.
+        </p>
+        <p class="text-sm text-gray-300">
+          Available docs — English: <%= englishDocs.length %> · Spanish: <%= spanishDocs.length %>
+        </p>
+        <div class="language-toggle flex gap-3 flex-wrap">
+          <button
+            type="button"
+            data-lang="en"
+            class="btn <%= defaultLang === 'en' ? 'btn-primary' : 'btn-primary-outline' %>"
+            aria-pressed="<%= defaultLang === 'en' ? 'true' : 'false' %>"
+          >
+            English docs
+          </button>
+          <button
+            type="button"
+            data-lang="es"
+            class="btn <%= defaultLang === 'es' ? 'btn-primary' : 'btn-primary-outline' %>"
+            aria-pressed="<%= defaultLang === 'es' ? 'true' : 'false' %>"
+          >
+            Español (original)
+          </button>
+        </div>
+      </header>
+
+      <section class="doc-grid" aria-live="polite">
+        <% if (!englishDocs.length && !spanishDocs.length) { %>
+        <div class="content-card">
+          <p class="text-gray-200">
+            There are no Markdown files in <code>docs</code> or <code>docs_es</code> yet.
+            Add files ending in <code>.md</code> to either folder and refresh to read
+            them directly in the app.
+          </p>
+        </div>
+        <% } %>
+
+        <% englishDocs.forEach((doc, index) => { %>
+        <article class="doc-card <%= defaultLang === 'en' ? '' : 'hidden' %>" data-language="en">
+          <div class="doc-card__header">
+            <%= doc.title %>
+          </div>
+          <div class="doc-card__body">
+            <pre class="hidden doc-raw"><%= doc.content %></pre>
+            <div class="doc-rendered" id="doc-en-<%= doc.slug || index %>"></div>
+          </div>
+        </article>
+        <% }) %>
+
+        <% spanishDocs.forEach((doc, index) => { %>
+        <article class="doc-card <%= defaultLang === 'es' ? '' : 'hidden' %>" data-language="es">
+          <div class="doc-card__header">
+            <%= doc.title %> (ES)
+          </div>
+          <div class="doc-card__body">
+            <pre class="hidden doc-raw"><%= doc.content %></pre>
+            <div class="doc-rendered" id="doc-es-<%= doc.slug || index %>"></div>
+          </div>
+        </article>
+        <% }) %>
+      </section>
+    </main>
+
+    <%- include('components/_footer') %>
+
+    <script>
+      const renderer = new marked.Renderer();
+      renderer.link = function (href, title, text) {
+        const target = href?.startsWith('#') ? '' : " target=\"_blank\" rel=\"noreferrer\"";
+        const titleAttr = title ? ` title="${title}"` : "";
+        return `<a href="${href}"${titleAttr}${target}>${text}</a>`;
+      };
+
+      document.querySelectorAll('.doc-card').forEach((card) => {
+        const rawContent = card.querySelector('.doc-raw')?.textContent ?? '';
+        const rendered = card.querySelector('.doc-rendered');
+        rendered.innerHTML = marked.parse(rawContent, { renderer });
+      });
+
+      const buttons = Array.from(document.querySelectorAll('[data-lang]'));
+      const cards = Array.from(document.querySelectorAll('[data-language]'));
+      const defaultLang = '<%= defaultLang %>';
+
+      const setLanguage = (lang) => {
+        cards.forEach((card) => {
+          const isActive = card.dataset.language === lang;
+          card.classList.toggle('hidden', !isActive);
+        });
+
+        buttons.forEach((btn) => {
+          const isActive = btn.dataset.lang === lang;
+          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+          btn.classList.toggle('btn-primary', isActive);
+          btn.classList.toggle('btn-primary-outline', !isActive);
+        });
+      };
+
+      buttons.forEach((btn) =>
+        btn.addEventListener('click', () => setLanguage(btn.dataset.lang))
+      );
+
+      if (cards.length && defaultLang) {
+        setLanguage(defaultLang);
+      }
+    </script>
+  </body>
+</html>

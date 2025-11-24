@@ -1,39 +1,39 @@
-# Guía para agregar/actualizar la imagen de perfil
+# Guide to add or update the profile image
 
-Estos pasos orientan la implementación de una foto de perfil editable para usuarios autenticados.
+These steps outline how to implement an editable profile photo for authenticated users.
 
-## 1) Fuente de la imagen
-- **Mock rápido**: Acepta una URL remota y guárdala en la sesión (`req.session.avatarUrl`).
-- **Persistencia**: Si se agrega almacenamiento real, usa disco (`/public/uploads`) o un bucket. Evita guardar binarios en sesión.
-- **Validación**: Asegura tamaño máximo (ej. 2 MB) y tipos permitidos (`image/jpeg`, `image/png`, `image/webp`).
+## 1) Image source
+- **Quick mock**: Accept a remote URL and store it in the session (`req.session.avatarUrl`).
+- **Persistence**: If real storage is added, use disk (`/public/uploads`) or a bucket. Avoid storing binaries in the session.
+- **Validation**: Enforce a max size (e.g., 2 MB) and allowed types (`image/jpeg`, `image/png`, `image/webp`).
 
 ## 2) Back-end
-- **Dependencias**: Añade `multer` para manejo de `multipart/form-data` si se soportan archivos.
-- **Rutas sugeridas**:
-  - `GET /profile/avatar`: Renderiza un formulario con la imagen actual y campo de carga o URL.
-  - `POST /profile/avatar`: Procesa el formulario, valida el archivo/URL, guarda la ruta (sesión o base de datos) y redirige a `/profile`.
-- **Protección**: Requiere sesión activa. Usa middleware para reutilizar la validación en cualquier ruta de perfil.
+- **Dependencies**: Add `multer` to handle `multipart/form-data` if file uploads are supported.
+- **Suggested routes**:
+  - `GET /profile/avatar`: Renders a form with the current image and a file or URL input.
+  - `POST /profile/avatar`: Processes the form, validates the file/URL, saves the path (session or database), and redirects to `/profile`.
+- **Protection**: Requires an active session. Use middleware to reuse validation across any profile route.
 
-## 3) Vistas
+## 3) Views
 - **`profile.ejs`**:
-  - Muestra la imagen con un placeholder por defecto (ej. `/css/avatar-placeholder.png`).
-  - Agrega enlace hacia `GET /profile/avatar` para editar.
-- **`profile-avatar.ejs` (nueva)**:
-  - Formulario con `input type="file"` y/o `input type="url"`.
-  - Previsualización en vivo usando un `<img>` que reaccione al cambio del input.
+  - Show the image with a default placeholder (e.g., `/css/avatar-placeholder.png`).
+  - Add a link to `GET /profile/avatar` to edit.
+- **`profile-avatar.ejs` (new)**:
+  - Form with `input type="file"` and/or `input type="url"`.
+  - Live preview using an `<img>` that reacts to input changes.
 
-## 4) Estilos y componentes
-- Reusa las utilidades de `_ui-helpers.ejs` para botones y inputs.
-- Crea una clase utilitaria `.avatar-ring` para bordes consistentes (`border-4 border-cyan-300 rounded-full`).
-- Si se añade un componente EJS reutilizable (`_avatar.ejs`), documenta sus props (`src`, `alt`, `size`) en `docs/COMPONENTS_BEHAVIOR.md`.
+## 4) Styles and components
+- Reuse `_ui-helpers.ejs` utilities for buttons and inputs.
+- Create a utility class `.avatar-ring` for consistent borders (`border-4 border-cyan-300 rounded-full`).
+- If a reusable EJS component (`_avatar.ejs`) is added, document its props (`src`, `alt`, `size`) in `docs/COMPONENTS_BEHAVIOR.md`.
 
-## 5) Testing manual
-- Subir una imagen válida y confirmar que se renderiza en `profile.ejs`.
-- Probar un archivo con tipo no permitido y validar que muestre error.
-- Cargar una URL quebrada y verificar fallback al placeholder.
-- Confirmar que cerrar sesión limpia la ruta del avatar almacenada en sesión.
+## 5) Manual testing
+- Upload a valid image and confirm it renders in `profile.ejs`.
+- Try a file with a disallowed type and verify an error is shown.
+- Load a broken URL and check the fallback to the placeholder.
+- Confirm that logging out clears the avatar path stored in the session.
 
-## 6) Checklist de despliegue
-- Limpiar `/public/uploads` en `.gitignore` para evitar subir archivos locales.
-- Añadir límite de tamaño en `multer` (`limits.fileSize`) y manejo de errores global.
-- Si se usa CDN/bucket, documentar variables de entorno (ej. `AVATAR_BUCKET_URL`) en `.env.example` y README.
+## 6) Deployment checklist
+- Ignore `/public/uploads` in `.gitignore` to avoid committing local files.
+- Add a size limit in `multer` (`limits.fileSize`) and global error handling.
+- If using a CDN/bucket, document environment variables (e.g., `AVATAR_BUCKET_URL`) in `.env.example` and README.

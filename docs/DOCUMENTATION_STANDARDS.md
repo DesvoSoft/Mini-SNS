@@ -1,28 +1,28 @@
-# Oportunidades de documentación y estandarización
+# Documentation and standardization opportunities
 
-Lista breve de áreas que pueden documentarse o alinearse para facilitar futuras contribuciones.
+Brief list of areas that can be documented or aligned to make future contributions easier.
 
-## Flujo de autenticación y sesión
-- Documentar en README el comportamiento de `POST /login` (usuarios mock, redirects por rol) y `GET /logout`.
-- Centralizar un middleware `requireSession` para reutilizar la validación en `/posts`, `/write`, `/profile` y nuevas rutas.
+## Authentication and session flow
+- Document in the README how `POST /login` behaves (mock users, role-based redirects) and `GET /logout`.
+- Centralize a `requireSession` middleware to reuse validation in `/posts`, `/write`, `/profile`, and new routes.
 
-## Manejo de datos y mocks
-- Explicar en una sección de "Datos de demo" que `posts` es un arreglo en memoria y cómo se recarga el estado en cada reinicio.
-- Añadir instrucciones para extender las categorías (`categories`) y cómo propagar cambios a todas las vistas que las consumen.
+## Data handling and mocks
+- Explain in a "Demo data" section that `posts` is an in-memory array and how the state is reset on every restart.
+- Add instructions for extending the categories (`categories`) and how to propagate changes to all views that consume them.
 
-## Estilos y UI
-- Mantener un catálogo de componentes (ver `docs/COMPONENTS_BEHAVIOR.md`) y documentar cualquier nueva clase utilitaria en `_ui-helpers.ejs`.
-- Estandarizar el uso de botones (`btn`, `btn-primary`, `btn-secondary`, `btn-success`) en vez de clases ad-hoc.
-- Crear una guía de tamaños para títulos y contenedores (`page-title`, `page-shell`, `content-card`) para que nuevas páginas sigan el mismo layout.
+## Styles and UI
+- Maintain a component catalog (see `docs/COMPONENTS_BEHAVIOR.md`) and document any new utility class in `_ui-helpers.ejs`.
+- Standardize the use of buttons (`btn`, `btn-primary`, `btn-secondary`, `btn-success`) instead of ad-hoc classes.
+- Create a size guide for titles and containers (`page-title`, `page-shell`, `content-card`) so new pages follow the same layout.
 
-## Formulario de posts
-- Registrar en un README o sección dedicada que `/posts` espera `content` y cómo se limpia (`trim()`).
-- Añadir ejemplos de validaciones futuras (límite de caracteres, bloqueo de HTML) y documentar el manejo de errores visible en la UI.
+## Post form
+- Note in the README or a dedicated section that `/posts` expects `content` and how it is trimmed with `trim()`.
+- Add examples of future validations (character limit, HTML blocking) and document how visible errors should appear in the UI.
 
-## Activos y assets
-- Documentar la estructura de `/public` y reservar un subdirectorio para uploads (ej. `/public/uploads`) si se agrega la imagen de perfil.
-- Mantener referencias a hojas de estilo comunes (`/css/bg.css`) y explicar cómo se reemplazaría Tailwind CDN por un build local si se necesita.
+## Assets
+- Document the `/public` structure and reserve a subdirectory for uploads (e.g., `/public/uploads`) if the profile image is added.
+- Keep references to common stylesheets (`/css/bg.css`) and explain how to replace the Tailwind CDN with a local build if needed.
 
-## Calidad y pruebas
-- Definir en `package.json` o un archivo `docs/TESTING.md` cómo ejecutar `npm test` y qué cubre (actualmente validación de sintaxis con `node --check app.js`).
-- Anotar pruebas manuales mínimas: login con usuarios mock, creación de post y navegación entre vistas protegidas.
+## Quality and tests
+- Define in `package.json` or a `docs/TESTING.md` file how to run `npm test` and what it covers (currently syntax validation with `node --check app.js`).
+- List minimal manual tests: login with mock users, create a post, and navigate protected views.
