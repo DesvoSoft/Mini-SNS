@@ -4,30 +4,9 @@
     <meta charset="UTF-8" />
     <title>Mini SNS - Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <%- include('components/_gfont.ejs') %>
     <!-- <link rel="stylesheet" href="./css/global.css" /> -->
     <link rel="stylesheet" href="./css/bg.css" />
-
-    <!-- Google font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Quantico -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Orbitron (Titles) -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Orbitron:wght@400..900&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      .font-title-gamer {
-        font-family: "Audiowide", sans-serif;
-      }
-      .font-body-gamer {
-        font-family: "Quantico", sans-serif;
-      }
-    </style>
   </head>
   <body
     class="animated-bg text-white min-h-screen relative pt-16 font-body-gamer"
@@ -37,7 +16,7 @@
     <main
       class="p-8 m-10 bg-gray-900/40 rounded-xl max-w-2xl mx-auto shadow-2xl backdrop-blur-md"
     >
-      <h1 class="text-3xl text-center font-extrabold mb-4 font-title-gamer">
+      <h1 class="text-3xl text-center font-extrabold mb-4 font-body-gamer">
         Welcome to Mini SNS<% if (username) { %>, <%= username %> <% } %>
       </h1>
 
@@ -83,7 +62,7 @@
 
           <button
             type="submit"
-            class="p-3 mt-4 bg-lime-500 hover:bg-lime-600 text-white font-bold rounded-md transition-colors shadow-lg"
+            class="p-3 mt-4 bg-lime-500 hover:bg-lime-600 text-black font-semibold rounded-md transition-colors shadow-lg hover:shadow-inner"
           >
             Login
           </button>
@@ -113,9 +92,7 @@
         </a>
       </div>
       <% } else { %>
-      <h2 class="text-center text-xl font-semibold mt-8 mb-4">
-        Log in required
-      </h2>
+      <h2 class="text-center text-xl mt-8 mb-4">Log in required</h2>
       <% } %>
     </main>
     <%- include('components/_footer') %>

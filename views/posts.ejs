@@ -4,10 +4,14 @@
     <meta charset="UTF-8" />
     <title>Posts - Mini SNS</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google font component class:font-body-gamer -->
+    <%- include('components/_gfont.ejs') %>
     <link rel="stylesheet" href="./css/bg.css" />
     <!-- <link rel="stylesheet" href="./css/posts.css" /> -->
   </head>
-  <body class="animated-bg text-white min-h-screen relative pb-20 pt-16">
+  <body
+    class="animated-bg text-white min-h-screen relative pb-20 pt-16 font-body-gamer"
+  >
     <%- include('components/_header', { username: username }) %>
     <main
       class="p-8 m-10 bg-gray-600/80 rounded-xl max-w-4xl mx-auto shadow-2xl backdrop-blur-md"

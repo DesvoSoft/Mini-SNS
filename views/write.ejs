@@ -4,17 +4,21 @@
     <meta charset="UTF-8" />
     <title>Write - Mini SNS</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google font component class:font-body-gamer -->
+    <%- include('components/_gfont.ejs') %>
     <link rel="stylesheet" href="./css/bg.css" />
     <!-- <link rel="stylesheet" href="./css/write.css" /> -->
   </head>
-  <body class="animated-bg text-white min-h-screen relative pb-20 pt-16">
+  <body
+    class="animated-bg text-white min-h-screen relative pb-20 pt-16 font-body-gamer"
+  >
     <%- include('components/_header', { username: username }) %>
 
     <main
       class="p-8 m-10 bg-gray-600/80 rounded-xl max-w-2xl mx-auto shadow-2xl backdrop-blur-md"
     >
       <h1 class="text-4xl font-extrabold text-center mb-10 text-cyan-200">
-        ✍️ Write a New Post
+        Write a New Post
       </h1>
 
       <div class="flex justify-start mb-8">
@@ -50,9 +54,9 @@
               id="content"
               name="content"
               rows="5"
-              placeholder="What's on your mind? Write something engaging!"
+              placeholder="Hello, lets post!"
               required
-              class="w-full p-3 border border-gray-500 rounded-md text-gray-800 focus:ring-2 focus:ring-[#74ebd5] outline-none"
+              class="w-full p-3 bg-gray-800 border border-gray-500 rounded-md text-white focus:ring-2 focus:ring-[#74ebd5] outline-none"
             ></textarea>
           </div>
 
@@ -60,7 +64,7 @@
             type="submit"
             class="w-full p-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-md transition-colors shadow-lg"
           >
-            🚀 Post Now
+            Post
           </button>
         </form>
       </div>

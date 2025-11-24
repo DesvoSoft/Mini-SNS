@@ -1,11 +1,13 @@
 <div class="post">
   <div
-    class="bg-gray-700/70 p-6 rounded-xl shadow-lg border border-gray-600 transition duration-300 hover:bg-gray-700/90"
+    class="bg-black/70 p-6 rounded-xl shadow-lg border border-cyan-700 transition duration-300 hover:bg-black/80 backdrop-blur-md"
   >
-    <p class="text-xl font-bold text-cyan-300 mb-2"><%= post.username %></p>
+    <p class="text-xl font-bold text-cyan-500 mb-2 font-title-gamer">
+      <%= post.username %>
+    </p>
 
     <div
-      class="text-lg text-gray-100 leading-relaxed border-t border-gray-500 pt-4 mt-4"
+      class="text-lg text-gray-100 leading-relaxed border-t border-cyan-700 pt-4 mt-4 font-body-gamer"
     >
       <%= post.content %>
     </div>
@@ -13,22 +15,27 @@
     <div
       class="flex justify-between items-center mt-4 pt-3 border-t border-gray-600"
     >
-      <div class="text-sm font-semibold text-gray-400">Comments</div>
+      <div class="text-sm font-semibold text-cyan-400 font-body-gamer">
+        [ COMMENTS ]
+      </div>
     </div>
 
     <div class="mt-4 flex space-x-2 items-center">
       <input
         type="text"
-        class="comment-input w-full p-2 text-sm text-gray-800 rounded-md border border-gray-500 focus:ring-2 focus:ring-[#74ebd5] outline-none"
-        placeholder="Write a comment..."
+        class="comment-input w-full p-2 text-sm text-lime-300 bg-black border border-cyan-700 rounded-md focus:ring-2 focus:ring-lime-500 outline-none font-body-gamer placeholder-gray-500"
+        placeholder="Write a comment"
       />
+
       <button
-        class="add-comment bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold py-2 px-4 rounded-md transition-colors shadow-sm"
+        class="add-comment bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-semibold py-2 px-4 rounded-md transition-colors shadow-sm font-title-gamer"
       >
-        Add Comment
+        Submit
       </button>
     </div>
 
-    <div class="comments mt-4 space-y-2 text-gray-300 text-sm"></div>
+    <div
+      class="comments mt-4 space-y-2 text-gray-300 text-sm font-body-gamer"
+    ></div>
   </div>
 </div>

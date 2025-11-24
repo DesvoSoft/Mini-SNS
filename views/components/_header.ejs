@@ -2,20 +2,20 @@
   class="bg-[#0D1117] p-4 flex justify-between items-center border-b-2 border-[#34495e] shadow-lg fixed top-0 w-full z-10"
 >
   <h1 class="text-3xl font-bold m-0">
-    <a href="/" class="text-gray-100 hover:text-cyan-400 transition-colors">
+    <a href="/" class="text-white transition-colors hover:animate-pulse">
       Mini SNS
     </a>
   </h1>
 
   <% if (username) { %>
   <div class="flex items-center space-x-4">
-    <span class="text-base font-semibold text-gray-100 hidden sm:inline">
+    <span class="text-base font-semibold text-lime-400 hidden sm:inline">
       <span class="text-cyan-400"><%= username %></span>
     </span>
 
     <a
       href="/logout"
-      class="bg-pink-600 hover:bg-pink-700 text-white text-sm font-semibold py-2 px-4 rounded-full transition-colors shadow-md"
+      class="bg-red-500 hover:bg-red-800 text-white text-sm font-semibold py-2 px-4 rounded-full transition-colors shadow-md"
     >
       Logout
     </a>
