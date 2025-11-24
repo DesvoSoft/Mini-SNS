@@ -88,7 +88,11 @@ app.get("/logout", (req, res) => {
 // =============================== PERFIL ===============================
 app.get("/profile", (req, res) => {
   if (req.session.username) {
-    return res.render("profile", { username: req.session.username });
+    const userPosts = posts.filter((p) => p.username === req.session.username);
+    return res.render("profile", {
+      username: req.session.username,
+      posts: userPosts,
+    });
   } else {
     return res.redirect("/");
   }
@@ -173,7 +177,9 @@ function loadDocs(directoryPath) {
           content: content.trim(),
         };
       })
-      .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }));
+      .sort((a, b) =>
+        a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
+      );
   } catch (error) {
     console.error(`Error loading docs from ${directoryPath}:`, error);
     return [];

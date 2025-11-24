@@ -5,51 +5,99 @@
     <title>Profile - Mini SNS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google font component class:font-body-gamer -->
-    <%- include('components/_gfont.ejs') %>
-    <%- include('components/_ui-helpers') %>
+    <%- include('components/_gfont.ejs') %> <%-
+    include('components/_ui-helpers') %>
     <link rel="stylesheet" href="/css/bg.css" />
   </head>
   <body class="app-body">
     <%- include('components/_header', { username: username }) %>
 
     <main class="page-shell page-shell--narrow space-y-8">
-      <h1 class="page-title">👤 <%= username %></h1>
+      <!-- Profile Header -->
+      <div class="flex flex-col items-center space-y-4">
+        <div class="relative group">
+          <img
+            src="https://api.dicebear.com/9.x/avataaars/svg?seed=<%= username %>"
+            alt="<%= username %>'s avatar"
+            class="w-32 h-32 rounded-full border-4 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.5)] bg-gray-800"
+          />
+          <div
+            class="absolute inset-0 rounded-full bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+          >
+            <span class="text-xs text-white font-bold">Change</span>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <h1 class="text-4xl font-bold text-white tracking-tight">
+            <%= username %>
+          </h1>
+          <p class="text-cyan-300 font-medium">
+            @<%= username.toLowerCase() %>
+          </p>
+        </div>
+
+        <div
+          class="flex gap-4 text-sm text-gray-400 bg-gray-900/50 px-6 py-2 rounded-full border border-gray-700/50"
+        >
+          <span>Joined May 2024</span>
+          <span>•</span>
+          <span><%= posts.length %> Posts</span>
+        </div>
+      </div>
 
       <div class="action-row action-row--left">
         <a href="/" class="btn btn-secondary">← Go Back Home</a>
       </div>
 
-      <div class="content-card space-y-4">
-        <h2 class="text-2xl font-semibold text-gray-100 border-b border-gray-500 pb-2">
-          Account Details
-        </h2>
-
-        <p class="text-lg text-gray-300">
-          <span class="font-bold text-cyan-300 w-32 inline-block"
-            >Username:</span
+      <div class="grid gap-6">
+        <!-- Bio Section -->
+        <div class="content-card">
+          <h2
+            class="text-xl font-bold text-gray-100 mb-4 flex items-center gap-2"
           >
-          <%= username %>
-        </p>
-
-        <p class="text-lg text-gray-300">
-          <span class="font-bold text-cyan-300 w-32 inline-block"
-            >Member Since:</span
-          >
-          2024-05-15 (Static)
-        </p>
-
-        <p class="text-lg text-gray-300">
-          <span class="font-bold text-cyan-300 w-32 inline-block"
-            >Total Posts:</span
-          >
-          4 (Mock Count)
-        </p>
-
-        <div class="pt-6 border-t border-gray-500 mt-6">
-          <p class="text-gray-400 italic">
-            This is your private profile view. You can add editing options here
-            later.
+            <span>📝</span> Bio
+          </h2>
+          <p class="text-gray-300 leading-relaxed">
+            Hello! I'm <%= username %>. This is a mock bio to demonstrate the
+            profile layout. I love coding, coffee, and building cool things with
+            EJS and Tailwind.
           </p>
+        </div>
+
+        <!-- Posts Section -->
+        <div class="space-y-4">
+          <h2
+            class="text-xl font-bold text-gray-100 pl-2 border-l-4 border-cyan-400"
+          >
+            Recent Posts
+          </h2>
+
+          <% if (posts.length === 0) { %>
+          <div class="content-card text-center py-8">
+            <p class="text-gray-400 mb-4">No posts yet.</p>
+            <a href="/write" class="btn btn-primary">Create your first post</a>
+          </div>
+          <% } else { %> <% posts.forEach(post => { %>
+          <div class="content-card hover:border-cyan-500/30 transition-colors">
+            <div class="flex items-start gap-3">
+              <img
+                src="https://api.dicebear.com/9.x/avataaars/svg?seed=<%= post.username %>"
+                class="w-10 h-10 rounded-full bg-gray-800"
+                alt="avatar"
+              />
+              <div>
+                <div class="flex items-baseline gap-2">
+                  <span class="font-bold text-gray-200"
+                    ><%= post.username %></span
+                  >
+                  <span class="text-xs text-gray-500">Just now</span>
+                </div>
+                <p class="text-gray-300 mt-1"><%= post.content %></p>
+              </div>
+            </div>
+          </div>
+          <% }) %> <% } %>
         </div>
       </div>
     </main>
