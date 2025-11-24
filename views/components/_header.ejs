@@ -2,7 +2,7 @@
   class="bg-[#0D1117] p-4 flex justify-between items-center border-b-2 border-[#34495e] shadow-lg fixed top-0 w-full z-10"
 >
   <h1 class="text-3xl font-bold m-0">
-    <a href="/" class="text-white transition-colors hover:animate-pulse">
+    <a href="/" class="text-lime-400 transition-colors hover:animate-pulse">
       Mini SNS
     </a>
   </h1>
@@ -10,7 +10,11 @@
   <% if (username) { %>
   <div class="flex items-center space-x-4">
     <span class="text-base font-semibold text-lime-400 hidden sm:inline">
-      <span class="text-cyan-400"><%= username %></span>
+      <span class="text-cyan-500"
+        ><a href="/profile" class="hover:text-white hover:animate-pulse"
+          ><%= username %></a
+        ></span
+      >
     </span>
 
     <a

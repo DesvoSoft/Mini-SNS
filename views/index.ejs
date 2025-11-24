@@ -7,6 +7,22 @@
     <%- include('components/_gfont.ejs') %>
     <!-- <link rel="stylesheet" href="./css/global.css" /> -->
     <link rel="stylesheet" href="./css/bg.css" />
+    <style>
+      @layer utilities {
+        .text-shadow {
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .text-shadow-md {
+          text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+        }
+        .text-shadow-lg {
+          text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+        }
+        .text-wshadow-lg {
+          text-shadow: 3px 3px 5px rgba(255, 255, 255, 0.4);
+        }
+      }
+    </style>
   </head>
   <body
     class="animated-bg text-white min-h-screen relative pt-16 font-body-gamer"
@@ -26,7 +42,10 @@
       <% } %>
 
       <p class="text-center mb-6 font-body-gamer">
-        Social media playground with Tailwind
+        Social media playground, now using
+        <span class="text-cyan-400 text-wshadow-lg animate-pulse"
+          >Tailwind</span
+        >
       </p>
 
       <% if (!username) { %>
