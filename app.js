@@ -15,6 +15,14 @@ const categories = [
   "Releases",
 ];
 
+// =============================== MOCK DATA ===============================
+const posts = [
+  { username: "Tom", content: "Mi primer post" },
+  { username: "Alice", content: "K-Lab <3" },
+  { username: "Wendy", content: "Learning EJS" },
+  { username: "Johan", content: "감사합니다" },
+];
+
 // =============================== CONFIGURACION EJS ===============================
 app.set("view engine", "ejs"); // --- EJS motor de plantillas
 app.set("views", path.join(__dirname, "views"));
@@ -99,18 +107,26 @@ app.get("/", (req, res) => {
 
 // Posts
 app.get("/posts", (req, res) => {
-  const posts = [
-    { username: "Tom", content: "Mi primer post" },
-    { username: "Alice", content: "K-Lab <3" },
-    { username: "Wendy", content: "Learning EJS" },
-    { username: "Johan", content: "감사합니다" },
-  ];
-
   if (req.session.username) {
     res.render("posts", { posts, username: req.session.username, categories }); // --- Renderiza posts.ejs con lista
   } else {
     res.redirect("/");
   }
+});
+
+// Post submit
+app.post("/posts", (req, res) => {
+  if (!req.session.username) {
+    return res.redirect("/");
+  }
+
+  const content = req.body.content?.trim();
+
+  if (content) {
+    posts.unshift({ username: req.session.username, content });
+  }
+
+  res.redirect("/posts");
 });
 
 // Write
