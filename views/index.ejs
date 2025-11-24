@@ -5,6 +5,7 @@
     <title>Mini SNS - Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <%- include('components/_gfont.ejs') %>
+    <%- include('components/_ui-helpers') %>
     <!-- <link rel="stylesheet" href="/css/global.css" /> -->
     <link rel="stylesheet" href="/css/bg.css" />
     <style>
@@ -24,89 +25,67 @@
       }
     </style>
   </head>
-  <body
-    class="animated-bg text-white min-h-screen relative pt-16 font-body-gamer"
-  >
+  <body class="app-body">
     <%- include('components/_header', { username: username }) %>
 
-    <main
-      class="p-8 m-10 bg-gray-900/40 rounded-xl max-w-2xl mx-auto shadow-2xl backdrop-blur-md"
-    >
-      <h1 class="text-3xl text-center font-extrabold mb-4 font-body-gamer">
+    <main class="page-shell page-shell--narrow space-y-6">
+      <h1 class="page-title">
         Welcome to Mini SNS<% if (username) { %>, <%= username %> <% } %>
       </h1>
 
       <!-- Error si usuario o contraseña son incorrectos -->
       <% if (loginError) { %>
-      <p class="text-red-400 font-bold text-center mb-4"><%= loginError %></p>
+      <p class="text-red-300 font-semibold text-center mb-4"><%= loginError %></p>
       <% } %>
 
-      <p class="text-center mb-6 font-body-gamer">
-        Social media playground, now using
-        <span class="text-cyan-200 text-shadow-lg animate-pulse">Tailwind</span>
-      </p>
+      <div class="content-card space-y-3 text-center">
+        <p class="font-body-gamer text-lg">
+          Social media playground, now using
+          <span class="text-cyan-200 text-shadow-lg animate-pulse">Tailwind</span>
+        </p>
+        <p class="text-sm text-gray-300">
+          Usa las mismas cabeceras, pies de página y helpers en todas las vistas
+          para mantener un estilo consistente.
+        </p>
+      </div>
 
       <% if (!username) { %>
-      <div class="bg-gray-700/50 p-6 rounded-lg shadow-inner font-body-gamer">
+      <div class="content-card">
         <h2 class="text-2xl font-semibold text-center mb-6">Login</h2>
         <form
           method="POST"
           action="/login"
-          class="flex flex-col gap-4 max-w-xs mx-auto"
+          class="flex flex-col gap-4 max-w-md mx-auto"
         >
-          <label for="username" class="font-semibold text-gray-100"
-            >Username</label
-          >
+          <label for="username" class="input-label">Username</label>
           <input
             type="text"
             name="username"
             placeholder="Enter username"
             required
-            class="p-2 border border-gray-500 rounded-md text-lime-400 bg-black/50 focus:ring-2 focus:ring-lime-300 outline-none font-mono"
+            class="input-field font-mono"
             autofocus
           />
 
-          <label for="password" class="font-semibold text-gray-100"
-            >Password</label
-          >
+          <label for="password" class="input-label">Password</label>
           <input
             type="password"
             name="password"
             placeholder="Enter password"
             required
-            class="p-2 border border-gray-500 rounded-md text-lime-400 bg-black/50 focus:ring-2 focus:ring-lime-300 outline-none font-mono"
+            class="input-field font-mono"
           />
 
-          <button
-            type="submit"
-            class="p-3 mt-4 bg-lime-500 hover:bg-lime-600 text-black font-semibold rounded-md transition-colors shadow-lg hover:shadow-inner"
-          >
-            Login
-          </button>
+          <button type="submit" class="btn-success">Login</button>
         </form>
       </div>
       <% } %> <% if (username) { %>
-      <h2 class="text-center text-xl font-semibold mt-8 mb-4">Available</h2>
+      <h2 class="text-center text-xl font-semibold">Available</h2>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <a
-          href="/write"
-          class="text-center p-4 bg-lime-500 hover:bg-lime-600 rounded-lg font-bold transition-colors shadow-md"
-        >
-          Write a Post
-        </a>
-        <a
-          href="/posts"
-          class="text-center p-4 bg-lime-500 hover:bg-lime-600 rounded-lg font-bold transition-colors shadow-md"
-        >
-          View Posts
-        </a>
-        <a
-          href="/profile"
-          class="text-center p-4 bg-lime-500 hover:bg-lime-600 rounded-lg font-bold transition-colors shadow-md"
-        >
-          Profile
-        </a>
+      <div class="action-row">
+        <a href="/write" class="btn btn-primary">Write a Post</a>
+        <a href="/posts" class="btn btn-primary">View Posts</a>
+        <a href="/profile" class="btn btn-primary">Profile</a>
       </div>
       <% } else { %>
       <h2 class="text-center text-xl mt-8 mb-4">Log in required</h2>
