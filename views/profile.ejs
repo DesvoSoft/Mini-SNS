@@ -6,35 +6,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google font component class:font-body-gamer -->
     <%- include('components/_gfont.ejs') %>
+    <%- include('components/_ui-helpers') %>
     <link rel="stylesheet" href="/css/bg.css" />
   </head>
-  <body
-    class="animated-bg text-white min-h-screen relative pb-20 pt-16 font-body-gamer"
-  >
+  <body class="app-body">
     <%- include('components/_header', { username: username }) %>
 
-    <main
-      class="p-8 m-10 bg-gray-600/80 rounded-xl max-w-2xl mx-auto shadow-2xl backdrop-blur-md"
-    >
-      <h1 class="text-4xl font-extrabold text-center mb-10 text-cyan-200">
-        👤 <%= username %>
-      </h1>
+    <main class="page-shell page-shell--narrow space-y-8">
+      <h1 class="page-title">👤 <%= username %></h1>
 
-      <div class="flex justify-start mb-8">
-        <a
-          href="/"
-          class="py-2 px-4 bg-gray-500 hover:bg-gray-700 rounded-lg text-white font-semibold transition-colors shadow-md"
-        >
-          ← Go Back Home
-        </a>
+      <div class="action-row action-row--left">
+        <a href="/" class="btn btn-secondary">← Go Back Home</a>
       </div>
 
-      <div
-        class="bg-gray-700/70 p-8 rounded-xl shadow-lg border border-gray-600 space-y-4"
-      >
-        <h2
-          class="text-2xl font-semibold text-gray-100 border-b border-gray-500 pb-2"
-        >
+      <div class="content-card space-y-4">
+        <h2 class="text-2xl font-semibold text-gray-100 border-b border-gray-500 pb-2">
           Account Details
         </h2>
 
