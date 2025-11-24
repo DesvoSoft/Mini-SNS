@@ -7,8 +7,8 @@
     <!-- Google font component class:font-body-gamer -->
     <%- include('components/_gfont.ejs') %>
     <%- include('components/_ui-helpers') %>
-    <link rel="stylesheet" href="./css/bg.css" />
-    <!-- <link rel="stylesheet" href="./css/write.css" /> -->
+    <link rel="stylesheet" href="/css/bg.css" />
+    <!-- <link rel="stylesheet" href="/css/write.css" /> -->
   </head>
   <body class="app-body">
     <%- include('components/_header', { username: username }) %>
@@ -25,7 +25,7 @@
       <%- include('components/_categories', { categories: categories }) %>
 
       <div class="content-card">
-        <form action="#" method="post" class="space-y-6">
+        <form action="/posts" method="post" class="space-y-6">
           <div>
             <label for="writer" class="input-label">Posting as:</label>
             <p class="input-ghost">
