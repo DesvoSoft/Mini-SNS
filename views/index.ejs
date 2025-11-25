@@ -2,99 +2,223 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mini SNS - Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <%- include('components/_gfont.ejs') %>
-    <%- include('components/_ui-helpers') %>
-    <!-- <link rel="stylesheet" href="/css/global.css" /> -->
+    <%- include('components/_gfont.ejs') %> <%-
+    include('components/_ui-helpers') %>
     <link rel="stylesheet" href="/css/bg.css" />
     <style>
       @layer utilities {
         .text-shadow {
           text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-        .text-shadow-md {
-          text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
-        }
         .text-shadow-lg {
           text-shadow: 3px 3px 4px rgba(0, 0, 0, 0.7);
         }
-        .text-wshadow-lg {
-          text-shadow: 1px 2px 4px rgba(255, 255, 255, 0.7);
-        }
+      }
+
+      .feature-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+      }
+
+      .hero-gradient {
+        background: linear-gradient(
+          135deg,
+          rgba(14, 165, 233, 0.1) 0%,
+          rgba(34, 211, 238, 0.1) 100%
+        );
       }
     </style>
   </head>
   <body class="app-body">
     <%- include('components/_header', { username: username }) %>
 
-    <main class="page-shell page-shell--narrow space-y-6">
-      <h1 class="page-title">
-        Welcome to Mini SNS<% if (username) { %>, <%= username %> <% } %>
-      </h1>
+    <main class="page-shell space-y-8">
+      <!-- Hero Section -->
+      <section
+        class="hero-gradient rounded-xl p-8 text-center space-y-4 border border-cyan-500/20"
+      >
+        <h1 class="page-title mb-2">
+          <% if (username) { %> Welcome back, <%= username %>! <% } else { %>
+          Welcome to Mini SNS <% } %>
+        </h1>
 
-      <!-- Error si usuario o contraseña son incorrectos -->
-      <% if (loginError) { %>
-      <p class="text-red-300 font-semibold text-center mb-4"><%= loginError %></p>
-      <% } %>
+        <p class="text-xl text-cyan-100 max-w-2xl mx-auto">
+          A modern social platform for sharing thoughts, connecting with others,
+          and building communities.
+        </p>
 
-      <div class="content-card space-y-3 text-center">
-        <p class="font-body-gamer text-lg">
-          Social media playground, now using
-          <span class="text-cyan-200 text-shadow-lg animate-pulse">Tailwind</span>
-        </p>
-        <p class="text-sm text-gray-300">
-          Usa las mismas cabeceras, pies de página y helpers en todas las vistas
-          para mantener un estilo consistente.
-        </p>
-        <div class="flex justify-center">
-          <a href="/docs" class="btn btn-primary">View Documentation</a>
+        <% if (loginError) { %>
+        <div
+          class="bg-red-500/20 border border-red-500/50 rounded-lg p-4 max-w-md mx-auto"
+        >
+          <p class="text-red-200 font-semibold"><%= loginError %></p>
         </div>
-      </div>
+        <% } %>
+      </section>
 
       <% if (!username) { %>
-      <div class="content-card">
-        <h2 class="text-2xl font-semibold text-center mb-6">Login</h2>
-        <form
-          method="POST"
-          action="/login"
-          class="flex flex-col gap-4 max-w-md mx-auto"
-        >
-          <label for="username" class="input-label">Username</label>
-          <input
-            type="text"
-            name="username"
-            placeholder="Enter username"
-            required
-            class="input-field font-mono"
-            autofocus
-          />
+      <!-- Login Section for Non-Authenticated Users -->
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Login Form -->
+        <div class="content-card">
+          <h2 class="text-2xl font-bold text-cyan-100 mb-6 text-center">
+            Sign In
+          </h2>
+          <form method="POST" action="/login" class="flex flex-col gap-4">
+            <div>
+              <label for="username" class="input-label">Username</label>
+              <input
+                type="text"
+                name="username"
+                placeholder="Enter your username"
+                required
+                class="input-field font-mono"
+                autofocus
+              />
+            </div>
 
-          <label for="password" class="input-label">Password</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Enter password"
-            required
-            class="input-field font-mono"
-          />
+            <div>
+              <label for="password" class="input-label">Password</label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+                class="input-field font-mono"
+              />
+            </div>
 
-          <button type="submit" class="btn-success">Login</button>
-        </form>
-      </div>
-      <% } %> <% if (username) { %>
-      <h2 class="text-center text-xl font-semibold">Available</h2>
+            <button type="submit" class="btn-success">Login</button>
+          </form>
 
-      <div class="action-row">
-        <a href="/write" class="btn btn-primary">Write a Post</a>
-        <a href="/posts" class="btn btn-primary">View Posts</a>
-        <a href="/docs" class="btn btn-primary">Documentation</a>
-        <a href="/profile" class="btn btn-primary">Profile</a>
+          <p class="text-center text-gray-300 mt-4 text-sm">
+            Don't have an account?
+            <a
+              href="/register"
+              class="text-cyan-400 hover:text-cyan-300 font-semibold"
+              >Register here</a
+            >
+          </p>
+        </div>
+
+        <!-- Features Preview -->
+        <div class="space-y-4">
+          <h2 class="text-2xl font-bold text-cyan-100 mb-4">Why Mini SNS?</h2>
+
+          <div class="feature-card content-card">
+            <div class="flex items-start gap-3">
+              <div class="text-3xl">📝</div>
+              <div>
+                <h3 class="font-semibold text-lg text-cyan-200 mb-1">
+                  Share Your Thoughts
+                </h3>
+                <p class="text-gray-300 text-sm">
+                  Create and share posts with the community instantly.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-card content-card">
+            <div class="flex items-start gap-3">
+              <div class="text-3xl">👥</div>
+              <div>
+                <h3 class="font-semibold text-lg text-cyan-200 mb-1">
+                  Connect with Others
+                </h3>
+                <p class="text-gray-300 text-sm">
+                  Follow profiles, engage with comments, and build your network.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-card content-card">
+            <div class="flex items-start gap-3">
+              <div class="text-3xl">🏷️</div>
+              <div>
+                <h3 class="font-semibold text-lg text-cyan-200 mb-1">
+                  Organize Content
+                </h3>
+                <p class="text-gray-300 text-sm">
+                  Use categories to discover and organize interesting posts.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <% } else { %>
-      <h2 class="text-center text-xl mt-8 mb-4">Log in required</h2>
+      <!-- Dashboard for Authenticated Users -->
+      <div class="space-y-6">
+        <h2 class="text-2xl font-bold text-center text-cyan-100">
+          Quick Actions
+        </h2>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <a
+            href="/write"
+            class="feature-card content-card text-center p-6 block hover:bg-cyan-900/20"
+          >
+            <div class="text-4xl mb-3">✍️</div>
+            <h3 class="font-semibold text-lg text-cyan-200 mb-1">Write Post</h3>
+            <p class="text-gray-300 text-sm">Share your thoughts</p>
+          </a>
+
+          <a
+            href="/posts"
+            class="feature-card content-card text-center p-6 block hover:bg-cyan-900/20"
+          >
+            <div class="text-4xl mb-3">📰</div>
+            <h3 class="font-semibold text-lg text-cyan-200 mb-1">View Feed</h3>
+            <p class="text-gray-300 text-sm">See what's new</p>
+          </a>
+
+          <a
+            href="/profile"
+            class="feature-card content-card text-center p-6 block hover:bg-cyan-900/20"
+          >
+            <div class="text-4xl mb-3">👤</div>
+            <h3 class="font-semibold text-lg text-cyan-200 mb-1">
+              Your Profile
+            </h3>
+            <p class="text-gray-300 text-sm">Manage your account</p>
+          </a>
+
+          <a
+            href="/docs"
+            class="feature-card content-card text-center p-6 block hover:bg-cyan-900/20"
+          >
+            <div class="text-4xl mb-3">📚</div>
+            <h3 class="font-semibold text-lg text-cyan-200 mb-1">
+              Documentation
+            </h3>
+            <p class="text-gray-300 text-sm">Learn more</p>
+          </a>
+        </div>
+
+        <!-- Platform Info -->
+        <div class="content-card text-center">
+          <p class="text-lg text-gray-200 mb-2">
+            Built with modern web technologies and a focus on user experience.
+          </p>
+          <p class="text-sm text-gray-400">
+            Using
+            <span class="text-cyan-400 font-semibold">Tailwind CSS</span> for
+            beautiful, responsive design.
+          </p>
+        </div>
+      </div>
       <% } %>
     </main>
+
     <%- include('components/_footer') %>
   </body>
 </html>
