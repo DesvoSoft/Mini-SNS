@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini SNS - Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <%- include('components/_gfont.ejs') %> <%-
+    include('components/_ui-helpers') %>
+    <link rel="stylesheet" href="/css/bg.css" />
+    <style>
+      @layer utilities {
+        .text-shadow {
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+      }
+
+      .feature-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+      }
+
+      .hero-gradient {
+        background: linear-gradient(
+          135deg,
+          rgba(14, 165, 233, 0.1) 0%,
+          rgba(34, 211, 238, 0.1) 100%
+        );
+      }
+
+      .password-strength {
+        transition: all 0.3s ease;
+      }
+    </style>
+  </head>
+  <body class="app-body">
+    <%- include('components/_header', { username: null }) %>
+
+    <main class="page-shell space-y-8">
+      <!-- Hero Section -->
+      <section
+        class="hero-gradient rounded-xl p-8 text-center space-y-4 border border-cyan-500/20"
+      >
+        <h1 class="page-title mb-2">Join Mini SNS</h1>
+
+        <p class="text-xl text-cyan-100 max-w-2xl mx-auto">
+          Create your account and start connecting with others today.
+        </p>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+        <div
+          class="bg-red-500/20 border border-red-500/50 rounded-lg p-4 max-w-md mx-auto"
+        >
+          <p class="text-red-200 font-semibold"><%= error %></p>
+        </div>
+        <% } %>
+      </section>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Registration Form -->
+        <div class="content-card">
+          <h2 class="text-2xl font-bold text-cyan-100 mb-6 text-center">
+            Create Account
+          </h2>
+
+          <form
+            method="POST"
+            action="/register"
+            class="flex flex-col gap-4"
+            id="registerForm"
+          >
+            <div>
+              <label for="username" class="input-label">Username</label>
+              <input
+                type="text"
+                name="username"
+                id="username"
+                placeholder="Choose a unique username"
+                required
+                minlength="3"
+                maxlength="20"
+                pattern="[a-zA-Z0-9_]+"
+                class="input-field font-mono"
+                autofocus
+              />
+              <p class="text-xs text-gray-400 mt-1">
+                3-20 characters, letters, numbers, and underscores only
+              </p>
+            </div>
+
+            <div>
+              <label for="email" class="input-label">Email</label>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                placeholder="your.email@example.com"
+                required
+                class="input-field font-mono"
+              />
+              <p class="text-xs text-gray-400 mt-1">
+                We'll never share your email
+              </p>
+            </div>
+
+            <div>
+              <label for="password" class="input-label">Password</label>
+              <input
+                type="password"
+                name="password"
+                id="password"
+                placeholder="Create a strong password"
+                required
+                minlength="6"
+                class="input-field font-mono"
+              />
+              <div class="mt-2 h-1 bg-gray-700 rounded-full overflow-hidden">
+                <div
+                  id="passwordStrength"
+                  class="password-strength h-full bg-gray-500 transition-all"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <p class="text-xs text-gray-400 mt-1">At least 6 characters</p>
+            </div>
+
+            <div>
+              <label for="confirmPassword" class="input-label"
+                >Confirm Password</label
+              >
+              <input
+                type="password"
+                name="confirmPassword"
+                id="confirmPassword"
+                placeholder="Re-enter your password"
+                required
+                class="input-field font-mono"
+              />
+              <p id="passwordMatch" class="text-xs mt-1 hidden"></p>
+            </div>
+
+            <div class="flex items-start gap-2">
+              <input
+                type="checkbox"
+                name="terms"
+                id="terms"
+                required
+                class="mt-1"
+              />
+              <label for="terms" class="text-sm text-gray-300">
+                I agree to the
+                <a href="#" class="text-cyan-400 hover:text-cyan-300"
+                  >Terms of Service</a
+                >
+                and
+                <a href="#" class="text-cyan-400 hover:text-cyan-300"
+                  >Privacy Policy</a
+                >
+              </label>
+            </div>
+
+            <button type="submit" class="btn-success" id="submitBtn">
+              Create Account
+            </button>
+          </form>
+
+          <p class="text-center text-gray-300 mt-6 text-sm">
+            Already have an account?
+            <a href="/" class="text-cyan-400 hover:text-cyan-300 font-semibold"
+              >Sign in here</a
+            >
+          </p>
+        </div>
+
+        <!-- Benefits Section -->
+        <div class="space-y-4">
+          <h2 class="text-2xl font-bold text-cyan-100 mb-4">What You'll Get</h2>
+
+          <div class="feature-card content-card">
+            <div class="flex items-start gap-3">
+              <div class="text-3xl">🎨</div>
+              <div>
+                <h3 class="font-semibold text-lg text-cyan-200 mb-1">
+                  Personalized Profile
+                </h3>
+                <p class="text-gray-300 text-sm">
+                  Customize your profile with images, bio, and more to express
+                  yourself.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-card content-card">
+            <div class="flex items-start gap-3">
+              <div class="text-3xl">💬</div>
+              <div>
+                <h3 class="font-semibold text-lg text-cyan-200 mb-1">
+                  Engage with Community
+                </h3>
+                <p class="text-gray-300 text-sm">
+                  Comment, like, and interact with posts from users around the
+                  platform.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-card content-card">
+            <div class="flex items-start gap-3">
+              <div class="text-3xl">🔒</div>
+              <div>
+                <h3 class="font-semibold text-lg text-cyan-200 mb-1">
+                  Secure & Private
+                </h3>
+                <p class="text-gray-300 text-sm">
+                  Your data is protected with industry-standard security
+                  practices.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-card content-card">
+            <div class="flex items-start gap-3">
+              <div class="text-3xl">🚀</div>
+              <div>
+                <h3 class="font-semibold text-lg text-cyan-200 mb-1">
+                  Fast & Modern
+                </h3>
+                <p class="text-gray-300 text-sm">
+                  Built with cutting-edge technology for a smooth, responsive
+                  experience.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <%- include('components/_footer') %>
+
+    <script>
+      // Password strength indicator
+      const passwordInput = document.getElementById("password");
+      const strengthBar = document.getElementById("passwordStrength");
+      const confirmPasswordInput = document.getElementById("confirmPassword");
+      const passwordMatchMsg = document.getElementById("passwordMatch");
+      const submitBtn = document.getElementById("submitBtn");
+
+      passwordInput.addEventListener("input", function () {
+        const password = this.value;
+        let strength = 0;
+
+        if (password.length >= 6) strength += 25;
+        if (password.length >= 10) strength += 25;
+        if (/[A-Z]/.test(password)) strength += 25;
+        if (/[0-9]/.test(password)) strength += 25;
+
+        strengthBar.style.width = strength + "%";
+
+        if (strength < 25) {
+          strengthBar.className =
+            "password-strength h-full bg-red-500 transition-all";
+        } else if (strength < 50) {
+          strengthBar.className =
+            "password-strength h-full bg-orange-500 transition-all";
+        } else if (strength < 75) {
+          strengthBar.className =
+            "password-strength h-full bg-yellow-500 transition-all";
+        } else {
+          strengthBar.className =
+            "password-strength h-full bg-green-500 transition-all";
+        }
+
+        checkPasswordMatch();
+      });
+
+      confirmPasswordInput.addEventListener("input", checkPasswordMatch);
+
+      function checkPasswordMatch() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (confirmPassword.length === 0) {
+          passwordMatchMsg.classList.add("hidden");
+          return;
+        }
+
+        passwordMatchMsg.classList.remove("hidden");
+
+        if (password === confirmPassword) {
+          passwordMatchMsg.textContent = "✓ Passwords match";
+          passwordMatchMsg.className = "text-xs mt-1 text-green-400";
+        } else {
+          passwordMatchMsg.textContent = "✗ Passwords do not match";
+          passwordMatchMsg.className = "text-xs mt-1 text-red-400";
+        }
+      }
+
+      // Form validation
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", function (e) {
+          const password = passwordInput.value;
+          const confirmPassword = confirmPasswordInput.value;
+
+          if (password !== confirmPassword) {
+            e.preventDefault();
+            alert("Passwords do not match!");
+            return false;
+          }
+
+          if (password.length < 6) {
+            e.preventDefault();
+            alert("Password must be at least 6 characters long!");
+            return false;
+          }
+        });
+    </script>
+  </body>
+</html>
