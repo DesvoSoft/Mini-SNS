@@ -270,8 +270,6 @@ We welcome contributions! Please see our [Contributing Guidelines](docs/CONTRIBU
 
 ---
 
-## Acknowledgments
-
 ### Academic Guidance
 
 This project was developed with the foundational support, architectural insights, and academic guidance provided by:
@@ -279,29 +277,11 @@ This project was developed with the foundational support, architectural insights
 **Professor DongYeop Hwang**  
 GitHub: [`@bc8c`](https://github.com/bc8c)
 
-### Special Thanks
-
-- K-Lab community for testing and feedback
-- Contributors who have helped improve this project
-
----
-
-## License
-
-This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## Contact & Support
-
-- **Issues**: [GitHub Issues](../../issues)
-- **Discussions**: [GitHub Discussions](../../discussions)
-
 ---
 
 <div align="center">
 
-**Made with ❤️ by the Mini SNS Team**
+**Made with ❤️ by Desvo **
 
 _감사합니다 Profesor Hwang - Dana - K-Lab_
 
