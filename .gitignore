@@ -23,7 +23,9 @@ config/local.js
 .vscode/
 
 # Archivos que se crean al subir imágenes (si implementas la subida)
-/public/uploads
+# Archivos que se crean al subir imágenes
+/public/uploads/avatars/*
+!/public/uploads/avatars/.gitkeep
 
 # Carpetas temporales o de compilación (si decides usar Webpack/Babel en el futuro)
 /dist

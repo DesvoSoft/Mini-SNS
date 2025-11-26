@@ -1,21 +1,29 @@
 # Profile Image Implementation Guide
 
-## Checklist
+# Profile Image Implementation Guide
 
-### 1. Storage & Validation
+## Status: Implemented ✅
 
-- [ ] **Storage**: Use `/public/uploads` or cloud storage.
-- [ ] **Validation**: Max 2MB, `jpg/png/webp`.
+### 1. Storage & Persistence
+
+- **Storage**: Local file system in `/public/uploads/avatars/`.
+- **Persistence**: User data and avatar paths stored in `data/users.json`.
+- **Validation**: Max 2MB, `jpg/png/webp` images only.
 
 ### 2. Backend
 
-- [ ] **Dependencies**: Install `multer`.
-- [ ] **Routes**:
-  - `GET /profile/avatar`: Edit form.
-  - `POST /profile/avatar`: Handle upload.
+- **Dependencies**: `multer` installed and configured.
+- **Routes**:
+  - `GET /profile`: Renders profile with avatar and modal logic.
+  - `POST /profile/avatar`: Handles file upload and updates JSON database.
+  - `POST /profile/avatar/delete`: Deletes avatar file and updates JSON database.
+- **Feedback**: Session-based flash messages for success/error notifications.
 
 ### 3. Frontend
 
-- [ ] **View**: Update `profile.ejs` with edit link.
-- [ ] **Form**: Create `profile-avatar.ejs` with file input.
-- [ ] **Styles**: Use `.avatar-ring` for styling.
+- **View**: `profile.ejs` updated with:
+  - Avatar display with "Change" button.
+  - **Modal UI** for uploading/deleting avatars (no separate page).
+  - Flash message display for user feedback.
+- **Assets**: Default avatar SVG added at `/public/images/default-avatar.svg`.
+- **DiceBear**: Removed completely.

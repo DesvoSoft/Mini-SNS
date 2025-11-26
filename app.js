@@ -7,6 +7,86 @@ const fs = require("fs"); // --- Lectura de archivos locales
 const morgan = require("morgan"); // --- Logs HTTP en consola
 const cookieParser = require("cookie-parser"); // --- Manejo de cookies
 const session = require("express-session"); // --- Manejo de sesiones
+const multer = require("multer"); // --- Manejo de subida de archivos
+
+const DATA_FILE = path.join(__dirname, "data", "users.json");
+
+// =============================== DATA PERSISTENCE HELPERS ===============================
+function loadUsers() {
+  try {
+    if (!fs.existsSync(DATA_FILE)) {
+      return [];
+    }
+    const data = fs.readFileSync(DATA_FILE, "utf-8");
+    return JSON.parse(data).users || [];
+  } catch (error) {
+    console.error("Error loading users:", error);
+    return [];
+  }
+}
+
+function saveUsers(users) {
+  try {
+    const data = JSON.stringify({ users }, null, 2);
+    fs.writeFileSync(DATA_FILE, data, "utf-8");
+  } catch (error) {
+    console.error("Error saving users:", error);
+  }
+}
+
+function getUserByUsername(username) {
+  const users = loadUsers();
+  return users.find((u) => u.username === username);
+}
+
+function updateUserAvatar(username, avatarPath) {
+  const users = loadUsers();
+  const userIndex = users.findIndex((u) => u.username === username);
+
+  if (userIndex !== -1) {
+    users[userIndex].avatarPath = avatarPath;
+    saveUsers(users);
+    return true;
+  }
+  return false;
+}
+
+// =============================== MULTER CONFIG ===============================
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, "public", "uploads", "avatars");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, req.session.username + "_" + uniqueSuffix + ext);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
+  fileFilter: function (req, file, cb) {
+    const filetypes = /jpeg|jpg|png|webp/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(
+      path.extname(file.originalname).toLowerCase()
+    );
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(
+      new Error(
+        "Error: File upload only supports images (jpeg, jpg, png, webp)!"
+      )
+    );
+  },
+});
 
 const categories = [
   "General",
@@ -31,6 +111,8 @@ app.set("views", path.join(__dirname, "views"));
 // =============================== ARCHIVOS ESTATICOS ===============================
 app.use("/css", express.static(path.join(__dirname, "public", "css")));
 app.use("/js", express.static(path.join(__dirname, "public", "js")));
+app.use("/images", express.static(path.join(__dirname, "public", "images")));
+app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
 
 // =============================== MIDDLEWARES ===============================
 app.use(morgan("common")); // --- Log de cada request
@@ -53,11 +135,8 @@ app.use(express.urlencoded({ extended: true })); // --- Procesa datos de formula
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
-  // Usuarios mock
-  const users = [
-    { username: "Desvo", password: "123", redirect: "/" },
-    { username: "Tom", password: "123456", redirect: "/posts" },
-  ];
+  // Cargar usuarios desde JSON
+  const users = loadUsers();
 
   // Buscar coincidencia
   const user = users.find(
@@ -66,6 +145,7 @@ app.post("/login", (req, res) => {
 
   if (user) {
     req.session.username = user.username;
+    req.session.avatarPath = user.avatarPath; // Store avatar in session
     return res.redirect(user.redirect);
   } else {
     // --- Guarda mensaje de error en la sesion
@@ -88,14 +168,99 @@ app.get("/logout", (req, res) => {
 // =============================== PERFIL ===============================
 app.get("/profile", (req, res) => {
   if (req.session.username) {
+    const user = getUserByUsername(req.session.username);
     const userPosts = posts.filter((p) => p.username === req.session.username);
+
+    // Get flash messages from session
+    const successMessage = req.session.successMessage;
+    const errorMessage = req.session.errorMessage;
+    delete req.session.successMessage;
+    delete req.session.errorMessage;
+
     return res.render("profile", {
       username: req.session.username,
+      user: user, // Pass full user object
       posts: userPosts,
+      successMessage: successMessage,
+      errorMessage: errorMessage,
     });
   } else {
     return res.redirect("/");
   }
+});
+
+// =============================== AVATAR UPLOAD ===============================
+app.get("/profile/avatar", (req, res) => {
+  if (!req.session.username) {
+    return res.redirect("/");
+  }
+
+  const user = getUserByUsername(req.session.username);
+
+  // Get flash messages from session
+  const successMessage = req.session.successMessage;
+  const errorMessage = req.session.errorMessage;
+  delete req.session.successMessage;
+  delete req.session.errorMessage;
+
+  res.render("profile-avatar", {
+    username: req.session.username,
+    user: user,
+    successMessage: successMessage,
+    errorMessage: errorMessage,
+  });
+});
+
+app.post("/profile/avatar", upload.single("avatar"), (req, res) => {
+  if (!req.session.username) {
+    return res.redirect("/");
+  }
+
+  if (!req.file) {
+    req.session.errorMessage = "No file uploaded. Please select an image.";
+    return res.redirect("/profile");
+  }
+
+  // Path relative to public folder for frontend use
+  const avatarPath = "/uploads/avatars/" + req.file.filename;
+
+  // Update user data
+  updateUserAvatar(req.session.username, avatarPath);
+
+  // Update session
+  req.session.avatarPath = avatarPath;
+  req.session.successMessage = "Avatar updated successfully!";
+
+  res.redirect("/profile");
+});
+
+app.post("/profile/avatar/delete", (req, res) => {
+  if (!req.session.username) {
+    return res.redirect("/");
+  }
+
+  const user = getUserByUsername(req.session.username);
+
+  if (user && user.avatarPath) {
+    // Delete the physical file
+    const filePath = path.join(__dirname, "public", user.avatarPath);
+    try {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    } catch (error) {
+      console.error("Error deleting avatar file:", error);
+    }
+
+    // Update database
+    updateUserAvatar(req.session.username, null);
+
+    // Update session
+    req.session.avatarPath = null;
+    req.session.successMessage = "Avatar deleted successfully!";
+  }
+
+  res.redirect("/profile");
 });
 
 // =============================== ROUTING ===============================
