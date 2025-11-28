@@ -9,46 +9,30 @@ const cookieParser = require("cookie-parser"); // --- Manejo de cookies
 const session = require("express-session"); // --- Manejo de sesiones
 const multer = require("multer"); // --- Manejo de subida de archivos
 
-const DATA_FILE = path.join(__dirname, "data", "users.json");
+const Feed = require("./models/feed");
+const User = require("./models/user");
+
+// const DATA_FILE = path.join(__dirname, "data", "users.json"); // Removed
 
 // =============================== DATA PERSISTENCE HELPERS ===============================
-function loadUsers() {
+// Helper to seed users if DB is empty
+async function seedUsers() {
   try {
-    if (!fs.existsSync(DATA_FILE)) {
-      return [];
+    const count = await User.countDocuments();
+    if (count === 0) {
+      const DATA_FILE = path.join(__dirname, "data", "users.json");
+      if (fs.existsSync(DATA_FILE)) {
+        const data = fs.readFileSync(DATA_FILE, "utf-8");
+        const users = JSON.parse(data).users || [];
+        if (users.length > 0) {
+          await User.insertMany(users);
+          console.log("Users seeded from JSON file.");
+        }
+      }
     }
-    const data = fs.readFileSync(DATA_FILE, "utf-8");
-    return JSON.parse(data).users || [];
   } catch (error) {
-    console.error("Error loading users:", error);
-    return [];
+    console.error("Error seeding users:", error);
   }
-}
-
-function saveUsers(users) {
-  try {
-    const data = JSON.stringify({ users }, null, 2);
-    fs.writeFileSync(DATA_FILE, data, "utf-8");
-  } catch (error) {
-    console.error("Error saving users:", error);
-  }
-}
-
-function getUserByUsername(username) {
-  const users = loadUsers();
-  return users.find((u) => u.username === username);
-}
-
-function updateUserAvatar(username, avatarPath) {
-  const users = loadUsers();
-  const userIndex = users.findIndex((u) => u.username === username);
-
-  if (userIndex !== -1) {
-    users[userIndex].avatarPath = avatarPath;
-    saveUsers(users);
-    return true;
-  }
-  return false;
 }
 
 // =============================== MULTER CONFIG ===============================
@@ -97,12 +81,7 @@ const categories = [
 ];
 
 // =============================== MOCK DATA ===============================
-const posts = [
-  { username: "Tom", content: "Mi primer post" },
-  { username: "Alice", content: "K-Lab <3" },
-  { username: "Wendy", content: "Learning EJS" },
-  { username: "Johan", content: "감사합니다" },
-];
+// Mock data removed in favor of MongoDB
 
 // =============================== CONFIGURACION EJS ===============================
 app.set("view engine", "ejs"); // --- EJS motor de plantillas
@@ -131,25 +110,36 @@ app.use(
 
 app.use(express.urlencoded({ extended: true })); // --- Procesa datos de formularios (POST)
 
-// =============================== AUTENTICACION MOCK ===============================
-app.post("/login", (req, res) => {
+const mongoose = require("mongoose");
+
+mongoose
+  .connect("mongodb://localhost:27017/mydb")
+  .then(async () => {
+    console.log("Connected to MongoDB");
+    await seedUsers();
+  })
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error);
+  });
+
+// =============================== AUTENTICACION ===============================
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  // Cargar usuarios desde JSON
-  const users = loadUsers();
+  try {
+    const user = await User.findOne({ username, password });
 
-  // Buscar coincidencia
-  const user = users.find(
-    (u) => u.username === username && u.password === password
-  );
-
-  if (user) {
-    req.session.username = user.username;
-    req.session.avatarPath = user.avatarPath; // Store avatar in session
-    return res.redirect(user.redirect);
-  } else {
-    // --- Guarda mensaje de error en la sesion
-    req.session.loginError = "Usuario o contraseña incorrectos.";
+    if (user) {
+      req.session.username = user.username;
+      req.session.avatarPath = user.avatarPath;
+      return res.redirect(user.redirect);
+    } else {
+      req.session.loginError = "Usuario o contraseña incorrectos.";
+      return res.redirect("/");
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+    req.session.loginError = "Error en el servidor.";
     return res.redirect("/");
   }
 });
@@ -166,52 +156,63 @@ app.get("/logout", (req, res) => {
 });
 
 // =============================== PERFIL ===============================
-app.get("/profile", (req, res) => {
+app.get("/profile", async (req, res) => {
   if (req.session.username) {
-    const user = getUserByUsername(req.session.username);
-    const userPosts = posts.filter((p) => p.username === req.session.username);
+    try {
+      const user = await User.findOne({ username: req.session.username });
+      // Fetch posts from DB
+      const userPosts = await Feed.find({ author: req.session.username }).sort({
+        createdAt: -1,
+      });
 
-    // Get flash messages from session
-    const successMessage = req.session.successMessage;
-    const errorMessage = req.session.errorMessage;
-    delete req.session.successMessage;
-    delete req.session.errorMessage;
+      const successMessage = req.session.successMessage;
+      const errorMessage = req.session.errorMessage;
+      delete req.session.successMessage;
+      delete req.session.errorMessage;
 
-    return res.render("profile", {
-      username: req.session.username,
-      user: user, // Pass full user object
-      posts: userPosts,
-      successMessage: successMessage,
-      errorMessage: errorMessage,
-    });
+      return res.render("profile", {
+        username: req.session.username,
+        user: user,
+        posts: userPosts,
+        successMessage: successMessage,
+        errorMessage: errorMessage,
+      });
+    } catch (error) {
+      console.error("Profile error:", error);
+      return res.redirect("/");
+    }
   } else {
     return res.redirect("/");
   }
 });
 
 // =============================== AVATAR UPLOAD ===============================
-app.get("/profile/avatar", (req, res) => {
+app.get("/profile/avatar", async (req, res) => {
   if (!req.session.username) {
     return res.redirect("/");
   }
 
-  const user = getUserByUsername(req.session.username);
+  try {
+    const user = await User.findOne({ username: req.session.username });
 
-  // Get flash messages from session
-  const successMessage = req.session.successMessage;
-  const errorMessage = req.session.errorMessage;
-  delete req.session.successMessage;
-  delete req.session.errorMessage;
+    const successMessage = req.session.successMessage;
+    const errorMessage = req.session.errorMessage;
+    delete req.session.successMessage;
+    delete req.session.errorMessage;
 
-  res.render("profile-avatar", {
-    username: req.session.username,
-    user: user,
-    successMessage: successMessage,
-    errorMessage: errorMessage,
-  });
+    res.render("profile-avatar", {
+      username: req.session.username,
+      user: user,
+      successMessage: successMessage,
+      errorMessage: errorMessage,
+    });
+  } catch (error) {
+    console.error("Avatar page error:", error);
+    res.redirect("/profile");
+  }
 });
 
-app.post("/profile/avatar", upload.single("avatar"), (req, res) => {
+app.post("/profile/avatar", upload.single("avatar"), async (req, res) => {
   if (!req.session.username) {
     return res.redirect("/");
   }
@@ -221,43 +222,53 @@ app.post("/profile/avatar", upload.single("avatar"), (req, res) => {
     return res.redirect("/profile");
   }
 
-  // Path relative to public folder for frontend use
   const avatarPath = "/uploads/avatars/" + req.file.filename;
 
-  // Update user data
-  updateUserAvatar(req.session.username, avatarPath);
+  try {
+    await User.updateOne(
+      { username: req.session.username },
+      { avatarPath: avatarPath }
+    );
 
-  // Update session
-  req.session.avatarPath = avatarPath;
-  req.session.successMessage = "Avatar updated successfully!";
+    req.session.avatarPath = avatarPath;
+    req.session.successMessage = "Avatar updated successfully!";
+  } catch (error) {
+    console.error("Avatar update error:", error);
+    req.session.errorMessage = "Error updating avatar.";
+  }
 
   res.redirect("/profile");
 });
 
-app.post("/profile/avatar/delete", (req, res) => {
+app.post("/profile/avatar/delete", async (req, res) => {
   if (!req.session.username) {
     return res.redirect("/");
   }
 
-  const user = getUserByUsername(req.session.username);
+  try {
+    const user = await User.findOne({ username: req.session.username });
 
-  if (user && user.avatarPath) {
-    // Delete the physical file
-    const filePath = path.join(__dirname, "public", user.avatarPath);
-    try {
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+    if (user && user.avatarPath) {
+      const filePath = path.join(__dirname, "public", user.avatarPath);
+      try {
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      } catch (error) {
+        console.error("Error deleting avatar file:", error);
       }
-    } catch (error) {
-      console.error("Error deleting avatar file:", error);
+
+      await User.updateOne(
+        { username: req.session.username },
+        { avatarPath: null }
+      );
+
+      req.session.avatarPath = null;
+      req.session.successMessage = "Avatar deleted successfully!";
     }
-
-    // Update database
-    updateUserAvatar(req.session.username, null);
-
-    // Update session
-    req.session.avatarPath = null;
-    req.session.successMessage = "Avatar deleted successfully!";
+  } catch (error) {
+    console.error("Avatar delete error:", error);
+    req.session.errorMessage = "Error deleting avatar.";
   }
 
   res.redirect("/profile");
@@ -275,17 +286,28 @@ app.get("/", (req, res) => {
   });
 });
 
-// Posts
-app.get("/posts", (req, res) => {
+// Posts Feed - Display all posts sorted by newest first
+app.get("/posts", async (req, res) => {
   if (req.session.username) {
-    res.render("posts", { posts, username: req.session.username, categories }); // --- Renderiza posts.ejs con lista
+    try {
+      // Fetch all posts from MongoDB, sorted by creation date (newest first)
+      const posts = await Feed.find().sort({ createdAt: -1 });
+      res.render("posts", {
+        posts,
+        username: req.session.username,
+        categories,
+      });
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      res.redirect("/");
+    }
   } else {
     res.redirect("/");
   }
 });
 
-// Post submit
-app.post("/posts", (req, res) => {
+// Post Submit - Create a new post
+app.post("/posts", async (req, res) => {
   if (!req.session.username) {
     return res.redirect("/");
   }
@@ -293,7 +315,47 @@ app.post("/posts", (req, res) => {
   const content = req.body.content?.trim();
 
   if (content) {
-    posts.unshift({ username: req.session.username, content });
+    try {
+      // Create new post in MongoDB with author and content
+      await Feed.create({
+        username: req.session.username, // Note: Schema says 'author', let's check
+        author: req.session.username,
+        content,
+      });
+    } catch (error) {
+      console.error("Error creating post:", error);
+    }
+  }
+
+  res.redirect("/posts");
+});
+
+// Comments - Add comment to a specific post
+app.post("/posts/:uuid/comments", async (req, res) => {
+  if (!req.session.username) {
+    return res.redirect("/");
+  }
+
+  const { uuid } = req.params;
+  const content = req.body.content?.trim();
+
+  if (content) {
+    try {
+      // Push new comment to post's comments array
+      await Feed.updateOne(
+        { uuid: uuid },
+        {
+          $push: {
+            comments: {
+              content,
+              author: req.session.username,
+            },
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
   }
 
   res.redirect("/posts");
@@ -307,6 +369,28 @@ app.get("/write", (req, res) => {
   } else {
     res.redirect("/");
   }
+});
+
+// Write Page - Create post from dedicated write page
+app.post("/write", async (req, res) => {
+  if (!req.session.username) {
+    return res.redirect("/");
+  }
+
+  const content = req.body.content?.trim();
+
+  if (content) {
+    try {
+      // Create post in MongoDB
+      await Feed.create({
+        author: req.session.username,
+        content,
+      });
+    } catch (error) {
+      console.error("Error creating post from write:", error);
+    }
+  }
+  res.redirect("/posts");
 });
 
 // Documentation
@@ -366,6 +450,8 @@ function slugify(text) {
     .replace(/(^-|-$)+/g, "")
     .trim();
 }
+
+// Sample feed creation removed
 
 // =============================== SERVIDOR ===============================
 app.listen(4000, "0.0.0.0", () => {

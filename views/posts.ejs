@@ -5,8 +5,8 @@
     <title>Posts - Mini SNS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google font component class:font-body-gamer -->
-    <%- include('components/_gfont.ejs') %>
-    <%- include('components/_ui-helpers') %>
+    <%- include('components/_gfont.ejs') %> <%-
+    include('components/_ui-helpers') %>
     <link rel="stylesheet" href="/css/bg.css" />
     <!-- <link rel="stylesheet" href="/css/posts.css" /> -->
   </head>
@@ -16,12 +16,8 @@
       <h1 class="page-title">Community Posts</h1>
 
       <div class="action-row">
-        <a href="/" class="btn btn-secondary">
-          ← Back to Home
-        </a>
-        <a href="/write" class="btn btn-primary">
-          Write New Post
-        </a>
+        <a href="/" class="btn btn-secondary"> ← Back to Home </a>
+        <a href="/write" class="btn btn-primary"> Write New Post </a>
       </div>
 
       <%- include('components/_categories', { categories: categories }) %>
@@ -37,6 +33,5 @@
     </main>
 
     <%- include('components/_footer') %>
-    <script src="/js/posts.js"></script>
   </body>
 </html>

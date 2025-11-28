@@ -5,8 +5,8 @@
     <title>Write - Mini SNS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google font component class:font-body-gamer -->
-    <%- include('components/_gfont.ejs') %>
-    <%- include('components/_ui-helpers') %>
+    <%- include('components/_gfont.ejs') %> <%-
+    include('components/_ui-helpers') %>
     <link rel="stylesheet" href="/css/bg.css" />
     <!-- <link rel="stylesheet" href="/css/write.css" /> -->
   </head>
@@ -17,9 +17,7 @@
       <h1 class="page-title">Write a New Post</h1>
 
       <div class="action-row action-row--left">
-        <a href="/" class="btn btn-secondary">
-          ← Back to Home
-        </a>
+        <a href="/" class="btn btn-secondary"> ← Back to Home </a>
       </div>
 
       <%- include('components/_categories', { categories: categories }) %>
@@ -28,9 +26,7 @@
         <form action="/posts" method="post" class="space-y-6">
           <div>
             <label for="writer" class="input-label">Posting as:</label>
-            <p class="input-ghost">
-              <%= username %>
-            </p>
+            <p class="input-ghost"><%= username %></p>
             <input type="hidden" name="writer" value="<%= username %>" />
           </div>
 
@@ -46,9 +42,7 @@
             ></textarea>
           </div>
 
-          <button type="submit" class="btn-success">
-            Post
-          </button>
+          <button type="submit" class="btn-success">Post</button>
         </form>
       </div>
     </main>

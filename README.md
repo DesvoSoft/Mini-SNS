@@ -29,10 +29,10 @@
 
 ### Core Functionality
 
-- **Session-Based Authentication** - Secure login/logout system with protected routes
-- **Post Creation & Feed** - Share and view text posts in real-time
-- **User Profiles** - Personalized user pages with profile image support
-- **Comments System** - Engage with posts through comments
+- **Session-Based Authentication** - Secure login/logout system with MongoDB user storage
+- **Post Creation & Feed** - Share and view posts with MongoDB persistence
+- **User Profiles** - Personalized pages with avatar support stored in database
+- **Comments System** - Full comment functionality with database storage
 - **Category Tags** - Organize content with interactive category chips
 - **Bilingual Docs** - Built-in English and Spanish documentation
 
@@ -55,9 +55,13 @@
 | **Node.js**         | LTS     | JavaScript runtime        |
 | **Express**         | 5.1.0   | Web application framework |
 | **EJS**             | 3.1.10  | Server-side templating    |
+| **MongoDB**         | 6.0+    | NoSQL database            |
+| **Mongoose**        | 9.0.0   | MongoDB ODM               |
 | **express-session** | 1.18.2  | Session management        |
 | **cookie-parser**   | 1.4.7   | Cookie parsing middleware |
 | **morgan**          | 1.10.1  | HTTP request logger       |
+| **multer**          | 2.0.2   | File upload handling      |
+| **uuid**            | 13.0.0  | Unique ID generation      |
 
 ### Frontend
 
@@ -77,6 +81,7 @@
 Before you begin, ensure you have the following installed:
 
 - **Node.js** (LTS version recommended) - [Download here](https://nodejs.org/)
+- **MongoDB** (6.0 or higher) - [Download here](https://www.mongodb.com/try/download/community)
 - **npm** (comes with Node.js)
 - A modern web browser (Chrome, Firefox, Safari, or Edge)
 
@@ -95,7 +100,25 @@ Before you begin, ensure you have the following installed:
    npm install
    ```
 
-3. **Start the development server**
+3. **Start MongoDB**
+
+   Make sure MongoDB is running on your system:
+
+   **Windows:**
+
+   ```bash
+   mongod
+   ```
+
+   **macOS/Linux:**
+
+   ```bash
+   sudo systemctl start mongod
+   # or
+   brew services start mongodb-community
+   ```
+
+4. **Start the development server**
 
    ```bash
    npm start
@@ -107,7 +130,12 @@ Before you begin, ensure you have the following installed:
    node app.js
    ```
 
-4. **Open your browser**
+   The application will:
+
+   - Connect to MongoDB at `mongodb://localhost:27017/mydb`
+   - Auto-seed users from `data/users.json` if the database is empty
+
+5. **Open your browser**
 
    Navigate to: `http://localhost:4000`
 
@@ -118,7 +146,7 @@ Use these mock credentials to explore the platform:
 | Username  | Password |
 | :-------- | :------- |
 | **Desvo** | 123      |
-| **Tom**   | 123456   |
+| **Tom**   | 1234     |
 
 ---
 
@@ -128,6 +156,11 @@ Use these mock credentials to explore the platform:
 mini-sns/
 ├── app.js                  # Main application entry point
 ├── package.json            # Project dependencies and scripts
+├── data/                   # Initial user data (for seeding)
+│   └── users.json         # User credentials and profiles
+├── models/                # MongoDB schemas
+│   ├── user.js            # User model (auth, avatars)
+│   └── feed.js            # Post and comment model
 ├── public/                 # Static assets
 │   ├── css/               # Stylesheets
 │   │   ├── bg.css         # Background animations
@@ -135,7 +168,7 @@ mini-sns/
 │   │   ├── posts.css      # Post-specific styles
 │   │   └── write.css      # Form styles
 │   ├── js/                # Client-side scripts
-│   └── uploads/           # User-uploaded files
+│   └── uploads/           # User-uploaded files (avatars)
 ├── views/                 # EJS templates
 │   ├── components/        # Reusable components
 │   │   ├── _header.ejs    # Navigation header
@@ -143,16 +176,19 @@ mini-sns/
 │   │   ├── _ui-helpers.ejs # Global CSS helpers
 │   │   ├── _gfont.ejs     # Font loader
 │   │   └── _categories.ejs # Category chips
-│   ├── index.ejs          # Home/feed page
-│   ├── login.ejs          # Login page
-│   ├── register.ejs       # Registration page
+│   ├── index.ejs          # Home/login page
+│   ├── posts.ejs          # Post feed page
 │   ├── write.ejs          # Post creation page
 │   ├── profile.ejs        # User profile page
+│   ├── profile-avatar.ejs # Avatar upload page
+│   ├── feed.ejs           # Post card component
 │   └── docs.ejs           # Documentation viewer
 ├── docs/                  # English documentation
+│   ├── ARCHITECTURE.md    # Database and system design
 │   ├── COMPONENTS.md      # Component reference
 │   └── CONTRIBUTING.md    # Contribution guidelines
 └── docs_es/               # Spanish documentation
+    ├── ARCHITECTURE.md
     ├── COMPONENTS.md
     └── CONTRIBUTING.md
 ```
@@ -212,6 +248,7 @@ Mini SNS includes comprehensive built-in documentation accessible at `/docs`:
 
 ### Available Docs
 
+- **[Architecture & Database](docs/ARCHITECTURE.md)** - MongoDB schema design and data flow
 - **[Components & Design System](docs/COMPONENTS.md)** - Complete component API and styling reference
 - **[Contributing Guidelines](docs/CONTRIBUTING.md)** - How to contribute to the project
 
@@ -247,26 +284,27 @@ We welcome contributions! Please see our [Contributing Guidelines](docs/CONTRIBU
 
 ## Roadmap
 
-### In Progress
+### Completed Features
 
 - [x] Session-based authentication
+- [x] MongoDB database integration
 - [x] Post creation and feed
-- [x] User profiles
+- [x] User profiles with avatars
+- [x] Profile picture upload/delete
+- [x] Comment system (full CRUD)
 - [x] Category system
 - [x] Bilingual documentation
 - [x] Documentation viewer
 
 ### Planned Features
 
-- [ ] **Image Uploads** - Using Multer for profile and post images
-- [ ] **Database Integration** - Migrate from mock data to MongoDB
-- [ ] **Enhanced Profiles** - Bio, social links, follower counts
-- [ ] **Comment System** - Full CRUD operations for comments
+- [ ] **Enhanced Profiles** - Bio editing, social links, follower counts
 - [ ] **Search Functionality** - Find posts and users
 - [ ] **Real-time Updates** - WebSocket integration for live feeds
 - [ ] **Dark/Light Themes** - User-selectable color schemes
 - [ ] **Email Notifications** - Alert system for interactions
 - [ ] **API Endpoints** - RESTful API for mobile apps
+- [ ] **Password Hashing** - Implement bcrypt for secure authentication
 
 ---
 

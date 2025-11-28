@@ -1,6 +1,66 @@
 # Componentes y Sistema de Diseño
 
-Este documento ofrece una inmersión profunda en la arquitectura de interfaz de usuario de Mini SNS, incluyendo nuestro enfoque de estilo híbrido, tokens de diseño y referencia de componentes.
+Este documento ofrece una inmersión profunda en la arquitectura de interfaz de usuario de Mini SNS, modelos de base de datos, enfoque de estilo híbrido, tokens de diseño y referencia de componentes.
+
+## Tabla de Contenidos
+
+- [Modelos de Base de Datos](#modelos-de-base-de-datos)
+- [Sistema de Diseño](#sistema-de-diseño)
+- [Arquitectura CSS](#arquitectura-css)
+- [Referencia de Componentes](#referencia-de-componentes)
+- [Gestión de Estado](#gestión-de-estado)
+
+---
+
+## Modelos de Base de Datos
+
+### Modelo Usuario (`models/user.js`)
+
+**Propósito**: Almacena autenticación de usuario y datos de perfil.
+
+**Campos**:
+
+- `username` (String, único) - Identificador de login de usuario
+- `password` (String) - Credencial de autenticación (texto plano, TODO: bcrypt)
+- `avatarPath` (String, nullable) - Ruta a imagen de perfil
+- `redirect` (String, default: "/posts") - Destino post-login
+
+**Uso**:
+
+```javascript
+const user = await User.findOne({ username });
+await User.updateOne({ username }, { avatarPath });
+```
+
+### Modelo Feed (`models/feed.js`)
+
+**Propósito**: Almacena publicaciones y comentarios embebidos.
+
+**Campos**:
+
+- `uuid` (String, único) - Identificador de publicación auto-generado
+- `content` (String) - Contenido de texto de publicación
+- `author` (String) - Nombre de usuario del creador de la publicación
+- `comments` (Array) - Subdocumentos de comentarios embebidos
+  - `content` (String) - Texto del comentario
+  - `author` (String) - Nombre de usuario del autor del comentario
+  - `createdAt` (Date) - Marca de tiempo del comentario
+- `createdAt` (Date) - Marca de tiempo de creación de publicación
+
+**Uso**:
+
+```javascript
+// Crear publicación
+await Feed.create({ author, content });
+
+// Agregar comentario
+await Feed.updateOne({ uuid }, { $push: { comments: { content, author } } });
+
+// Obtener publicaciones
+const posts = await Feed.find().sort({ createdAt: -1 });
+```
+
+---
 
 ## Sistema de Diseño
 
@@ -77,6 +137,20 @@ _Usado para: Componentes complejos con muchos sub-elementos repetidos._
   - `.category-pill`: Chip de categoría interactivo con efectos hover y sombra.
   - `.category-dot`: Punto brillante decorativo dentro de la píldora.
 
+**Ejemplo de Uso**:
+
+```html
+<div class="category-wrap">
+  <h3 class="category-title">Temas</h3>
+  <div class="category-grid">
+    <a href="#" class="category-pill">
+      <span class="category-dot"></span>
+      Juegos
+    </a>
+  </div>
+</div>
+```
+
 ### 4. Estilos Externos
 
 _Usado para: Animaciones globales, restablecimientos base y estilos heredados._
@@ -121,6 +195,15 @@ _Usado para: Animaciones globales, restablecimientos base y estilos heredados._
 
 - **Rol**: **CRÍTICO**. Debe incluirse en `<head>` para cargar clases CSS globales.
 - **Exportaciones**: `.page-shell`, `.btn-*`, `.input-*`.
+- **Uso**:
+  ```ejs
+  <%- include('components/_ui-helpers') %>
+  <body class="app-body">
+    <div class="page-shell">
+      <!-- Contenido -->
+    </div>
+  </body>
+  ```
 
 ### Componentes de Funcionalidad
 
@@ -134,8 +217,43 @@ _Usado para: Animaciones globales, restablecimientos base y estilos heredados._
 
 #### `feed.ejs` (Tarjeta de Publicación)
 
-- **Rol**: Renderiza una sola publicación.
-- **Props**: `post` (Objeto).
+- **Rol**: Renderiza una sola publicación con comentarios.
+- **Props**: `post` (Objeto del modelo Feed).
+  - `post.author` (String) - Nombre de usuario del creador
+  - `post.content` (String) - Texto de la publicación
+  - `post.uuid` (String) - Identificador único de publicación
+  - `post.comments` (Array) - Array de objetos de comentarios
 - **Estilo**:
-  - Usa `bg-gray-800` con `rounded-lg` y `shadow-lg`.
-  - Las imágenes son `object-cover`.
+  - Usa `bg-black/70` con efectos glassmorphism.
+  - Formulario de comentarios envía a `/posts/:uuid/comments`.
+  - Comentarios renderizados del lado del servidor desde array `post.comments`.
+- **Características**:
+  - Muestra recuento de comentarios
+  - Formulario de envío de comentarios (POST al backend)
+  - Lista de comentarios con autor y contenido
+
+---
+
+## Gestión de Estado
+
+### Estado del Lado del Cliente
+
+Mini SNS utiliza un **enfoque minimalista** para el estado del cliente, confiando principalmente en HTML renderizado por el servidor.
+
+- **Formularios**: Envíos de formularios HTML nativos.
+- **Interactividad**: Vanilla JS para alternancias simples (ej., cambio de idioma en docs).
+
+### Estado del Lado del Servidor
+
+- **Sesión**: `req.session` almacena:
+  - `username`: Usuario actual logueado.
+  - `avatarPath`: Ruta al avatar del usuario.
+  - `loginError`: Mensaje flash para fallos de login.
+- **Persistencia**: MongoDB almacena todos los datos permanentes (Usuarios, Feed).
+
+### Patrón de Flujo de Datos
+
+1. **Petición**: Usuario realiza acción (POST /login).
+2. **Actualización**: Servidor actualiza BD y Sesión.
+3. **Respuesta**: Servidor redirige o renderiza nuevo HTML.
+4. **Renderizado**: Cliente recibe estado fresco vía carga de página completa.

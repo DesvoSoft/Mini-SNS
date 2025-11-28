@@ -1,6 +1,66 @@
 # Components & Design System
 
-This document provides a deep dive into the Mini SNS UI architecture, including our hybrid styling approach, design tokens, and component reference.
+This document provides a deep dive into the Mini SNS UI architecture, database models, hybrid styling approach, design tokens, and component reference.
+
+## Table of Contents
+
+- [Database Models](#database-models)
+- [Design System](#design-system)
+- [CSS Architecture](#css-architecture)
+- [Component Reference](#component-reference)
+- [State Management](#state-management)
+
+---
+
+## Database Models
+
+### User Model (`models/user.js`)
+
+**Purpose**: Stores user authentication and profile data.
+
+**Fields**:
+
+- `username` (String, unique) - User login identifier
+- `password` (String) - Authentication credential (plain text, TODO: bcrypt)
+- `avatarPath` (String, nullable) - Path to profile picture
+- `redirect` (String, default: "/posts") - Post-login destination
+
+**Usage**:
+
+```javascript
+const user = await User.findOne({ username });
+await User.updateOne({ username }, { avatarPath });
+```
+
+### Feed Model (`models/feed.js`)
+
+**Purpose**: Stores posts and embedded comments.
+
+**Fields**:
+
+- `uuid` (String, unique) - Auto-generated post identifier
+- `content` (String) - Post text content
+- `author` (String) - Username of post creator
+- `comments` (Array) - Embedded comment subdocuments
+  - `content` (String) - Comment text
+  - `author` (String) - Comment author username
+  - `createdAt` (Date) - Comment timestamp
+- `createdAt` (Date) - Post creation timestamp
+
+**Usage**:
+
+```javascript
+// Create post
+await Feed.create({ author, content });
+
+// Add comment
+await Feed.updateOne({ uuid }, { $push: { comments: { content, author } } });
+
+// Fetch posts
+const posts = await Feed.find().sort({ createdAt: -1 });
+```
+
+---
 
 ## Design System
 
@@ -77,6 +137,20 @@ _Used for: Complex components with many repeated sub-elements._
   - `.category-pill`: Interactive category chip with hover effects and shadow.
   - `.category-dot`: Decorative glowing dot inside the pill.
 
+**Example Usage**:
+
+```html
+<div class="category-wrap">
+  <h3 class="category-title">Topics</h3>
+  <div class="category-grid">
+    <a href="#" class="category-pill">
+      <span class="category-dot"></span>
+      Gaming
+    </a>
+  </div>
+</div>
+```
+
 ### 4. External Styles
 
 _Used for: Global animations, base resets, and legacy styles._
@@ -121,6 +195,15 @@ _Used for: Global animations, base resets, and legacy styles._
 
 - **Role**: **CRITICAL**. Must be included in `<head>` to load global CSS classes.
 - **Exports**: `.page-shell`, `.btn-*`, `.input-*`.
+- **Usage**:
+  ```ejs
+  <%- include('components/_ui-helpers') %>
+  <body class="app-body">
+    <div class="page-shell">
+      <!-- Content -->
+    </div>
+  </body>
+  ```
 
 ### Feature Components
 
@@ -134,8 +217,43 @@ _Used for: Global animations, base resets, and legacy styles._
 
 #### `feed.ejs` (Post Card)
 
-- **Role**: Renders a single post.
-- **Props**: `post` (Object).
+- **Role**: Renders a single post with comments.
+- **Props**: `post` (Object from Feed model).
+  - `post.author` (String) - Post creator username
+  - `post.content` (String) - Post text
+  - `post.uuid` (String) - Unique post identifier
+  - `post.comments` (Array) - Array of comment objects
 - **Styling**:
-  - Uses `bg-gray-800` with `rounded-lg` and `shadow-lg`.
-  - Images are `object-cover`.
+  - Uses `bg-black/70` with glassmorphism effects.
+  - Comment form submits to `/posts/:uuid/comments`.
+  - Comments rendered server-side from `post.comments` array.
+- **Features**:
+  - Displays comment count
+  - Comment submission form (POST to backend)
+  - Comment list with author and content
+
+---
+
+## State Management
+
+### Client-Side State
+
+Mini SNS uses a **minimalist approach** to client-side state, relying mostly on server-rendered HTML.
+
+- **Forms**: Native HTML form submissions.
+- **Interactivity**: Vanilla JS for simple toggles (e.g., language switcher in docs).
+
+### Server-Side State
+
+- **Session**: `req.session` stores:
+  - `username`: Current logged-in user.
+  - `avatarPath`: Path to user's avatar.
+  - `loginError`: Flash message for login failures.
+- **Persistence**: MongoDB stores all permanent data (Users, Feed).
+
+### Data Flow Pattern
+
+1. **Request**: User performs action (POST /login).
+2. **Update**: Server updates DB and Session.
+3. **Response**: Server redirects or renders new HTML.
+4. **Render**: Client receives fresh state via full page load.

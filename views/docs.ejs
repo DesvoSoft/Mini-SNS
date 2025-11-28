@@ -5,12 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mini SNS - Documentation</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="/js/lib/marked.min.js"></script>
+    <link rel="stylesheet" href="/css/lib/atom-one-dark.min.css" />
+    <script src="/js/lib/highlight.min.js"></script>
     <%- include('components/_gfont.ejs') %> <%-
     include('components/_ui-helpers') %>
     <link rel="stylesheet" href="/css/bg.css" />
@@ -306,14 +303,50 @@
     <!-- No Footer on Docs page for cleaner layout -->
 
     <script>
+      // State Management
+      let currentLang = "<%= defaultLang %>";
+      let currentIndex = 0;
+
       // Markdown Rendering
       const renderer = new marked.Renderer();
-      renderer.link = function (href, title, text) {
-        const target = href?.startsWith("#")
+      const originalLink = renderer.link;
+      renderer.link = function (tokenOrHref, title, text) {
+        let href = tokenOrHref;
+        let linkTitle = title;
+        let linkText = text;
+
+        // Handle new marked version signature (object)
+        if (typeof tokenOrHref === "object" && tokenOrHref !== null) {
+          href = tokenOrHref.href;
+          linkTitle = tokenOrHref.title;
+          linkText = tokenOrHref.text;
+        }
+
+        const safeHref = String(href || "#");
+        const target = safeHref.startsWith("#")
           ? ""
           : ' target="_blank" rel="noreferrer"';
-        const titleAttr = title ? ` title="${title}"` : "";
-        return `<a href="${href}"${titleAttr}${target}>${text}</a>`;
+        const titleAttr = linkTitle ? ` title="${linkTitle}"` : "";
+        return `<a href="${safeHref}"${titleAttr}${target}>${linkText}</a>`;
+      };
+
+      // Custom Heading Renderer for IDs
+      renderer.heading = function (textOrToken, level) {
+        let text = textOrToken;
+        let depth = level;
+
+        if (typeof textOrToken === "object" && textOrToken !== null) {
+          text = textOrToken.text;
+          depth = textOrToken.depth;
+        }
+
+        const id = text
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/[\s_-]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+
+        return `<h${depth} id="${id}">${text}</h${depth}>`;
       };
 
       // Render all docs on load
@@ -325,10 +358,6 @@
           hljs.highlightElement(block);
         });
       });
-
-      // State Management
-      let currentLang = "<%= defaultLang %>";
-      let currentIndex = 0;
 
       function setLanguage(lang) {
         currentLang = lang;
