@@ -282,32 +282,6 @@ We welcome contributions! Please see our [Contributing Guidelines](docs/CONTRIBU
 
 ---
 
-## Roadmap
-
-### Completed Features
-
-- [x] Session-based authentication
-- [x] MongoDB database integration
-- [x] Post creation and feed
-- [x] User profiles with avatars
-- [x] Profile picture upload/delete
-- [x] Comment system (full CRUD)
-- [x] Category system
-- [x] Bilingual documentation
-- [x] Documentation viewer
-
-### Planned Features
-
-- [ ] **Enhanced Profiles** - Bio editing, social links, follower counts
-- [ ] **Search Functionality** - Find posts and users
-- [ ] **Real-time Updates** - WebSocket integration for live feeds
-- [ ] **Dark/Light Themes** - User-selectable color schemes
-- [ ] **Email Notifications** - Alert system for interactions
-- [ ] **API Endpoints** - RESTful API for mobile apps
-- [ ] **Password Hashing** - Implement bcrypt for secure authentication
-
----
-
 ### Academic Guidance
 
 This project was developed with the foundational support, architectural insights, and academic guidance provided by:
@@ -319,7 +293,7 @@ GitHub: [`@bc8c`](https://github.com/bc8c)
 
 <div align="center">
 
-**Made with ❤️ by Desvo **
+Made with ❤️ by Desvo
 
 _감사합니다 Profesor Hwang - Dana - K-Lab_
 
