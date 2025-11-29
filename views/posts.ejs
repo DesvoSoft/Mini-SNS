@@ -24,7 +24,8 @@
 
       <div class="space-y-6">
         <% if (posts && posts.length > 0) { %> <% posts.forEach(function(post) {
-        %> <%- include("feed", {post: post}) %> <% }); %> <% } else { %>
+        %> <%- include("feed", {post: post, authorAvatars: typeof authorAvatars
+        !== 'undefined' ? authorAvatars : {} }) %> <% }); %> <% } else { %>
         <p class="text-center text-xl text-gray-400 pt-10">
           No hay posts disponibles aún
         </p>

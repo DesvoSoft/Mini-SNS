@@ -122,6 +122,14 @@ mongoose
     console.error("Error connecting to MongoDB:", error);
   });
 
+// =============================== MIDDLEWARE HELPER ===============================
+function isAuthenticated(req, res, next) {
+  if (req.session.username) {
+    return next();
+  }
+  res.redirect("/");
+}
+
 // =============================== AUTENTICACION ===============================
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -172,6 +180,7 @@ app.get("/profile", async (req, res) => {
 
       return res.render("profile", {
         username: req.session.username,
+        avatarPath: req.session.avatarPath,
         user: user,
         posts: userPosts,
         successMessage: successMessage,
@@ -202,6 +211,7 @@ app.get("/profile/avatar", async (req, res) => {
 
     res.render("profile-avatar", {
       username: req.session.username,
+      avatarPath: req.session.avatarPath,
       user: user,
       successMessage: successMessage,
       errorMessage: errorMessage,
@@ -212,33 +222,34 @@ app.get("/profile/avatar", async (req, res) => {
   }
 });
 
-app.post("/profile/avatar", upload.single("avatar"), async (req, res) => {
-  if (!req.session.username) {
-    return res.redirect("/");
+app.post(
+  "/profile/avatar",
+  isAuthenticated,
+  upload.single("avatar"),
+  async (req, res) => {
+    if (!req.file) {
+      req.session.errorMessage = "No file uploaded. Please select an image.";
+      return res.redirect("/profile");
+    }
+
+    const avatarPath = "/uploads/avatars/" + req.file.filename;
+
+    try {
+      await User.updateOne(
+        { username: req.session.username },
+        { avatarPath: avatarPath }
+      );
+
+      req.session.avatarPath = avatarPath;
+      req.session.successMessage = "Avatar updated successfully!";
+    } catch (error) {
+      console.error("Avatar update error:", error);
+      req.session.errorMessage = "Error updating avatar.";
+    }
+
+    res.redirect("/profile");
   }
-
-  if (!req.file) {
-    req.session.errorMessage = "No file uploaded. Please select an image.";
-    return res.redirect("/profile");
-  }
-
-  const avatarPath = "/uploads/avatars/" + req.file.filename;
-
-  try {
-    await User.updateOne(
-      { username: req.session.username },
-      { avatarPath: avatarPath }
-    );
-
-    req.session.avatarPath = avatarPath;
-    req.session.successMessage = "Avatar updated successfully!";
-  } catch (error) {
-    console.error("Avatar update error:", error);
-    req.session.errorMessage = "Error updating avatar.";
-  }
-
-  res.redirect("/profile");
-});
+);
 
 app.post("/profile/avatar/delete", async (req, res) => {
   if (!req.session.username) {
@@ -282,26 +293,36 @@ app.get("/", (req, res) => {
 
   res.render("index", {
     username: req.session.username,
+    avatarPath: req.session.avatarPath,
     loginError: loginError,
   });
 });
 
 // Posts Feed - Display all posts sorted by newest first
-app.get("/posts", async (req, res) => {
-  if (req.session.username) {
-    try {
-      // Fetch all posts from MongoDB, sorted by creation date (newest first)
-      const posts = await Feed.find().sort({ createdAt: -1 });
-      res.render("posts", {
-        posts,
-        username: req.session.username,
-        categories,
-      });
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-      res.redirect("/");
-    }
-  } else {
+app.get("/posts", isAuthenticated, async (req, res) => {
+  try {
+    // Fetch all posts from MongoDB, sorted by creation date (newest first)
+    const posts = await Feed.find().sort({ createdAt: -1 });
+
+    // Collect all unique authors from posts
+    const authors = [...new Set(posts.map((post) => post.author))];
+
+    // Fetch avatar paths for these authors
+    const users = await User.find({ username: { $in: authors } });
+    const authorAvatars = {};
+    users.forEach((user) => {
+      authorAvatars[user.username] = user.avatarPath;
+    });
+
+    res.render("posts", {
+      posts,
+      username: req.session.username,
+      avatarPath: req.session.avatarPath,
+      categories,
+      authorAvatars, // Pass the map of avatars to the view
+    });
+  } catch (error) {
+    console.error("Error fetching posts:", error);
     res.redirect("/");
   }
 });
@@ -362,13 +383,12 @@ app.post("/posts/:uuid/comments", async (req, res) => {
 });
 
 // Write
-app.get("/write", (req, res) => {
-  if (req.session.username) {
-    res.render("write", { username: req.session.username, categories });
-    // res.sendFile(path.join(__dirname, "public", "write.html"));
-  } else {
-    res.redirect("/");
-  }
+app.get("/write", isAuthenticated, (req, res) => {
+  res.render("write", {
+    username: req.session.username,
+    avatarPath: req.session.avatarPath,
+    categories,
+  });
 });
 
 // Write Page - Create post from dedicated write page
@@ -400,6 +420,7 @@ app.get("/docs", (req, res) => {
 
   res.render("docs", {
     username: req.session.username,
+    avatarPath: req.session.avatarPath,
     englishDocs,
     spanishDocs,
   });
