@@ -8,12 +8,15 @@ document.querySelectorAll(".post").forEach(function (post) {
 
   // Update comment count function
   function updateCommentCount() {
+    if (!commentCount) return;
     const count = commentList.querySelectorAll("p").length;
     commentCount.innerText = `Comments (${count})`;
   }
 
+  updateCommentCount();
+
   // Add event listener to Add Comment button
-  addButton.addEventListener("click", function () {
+  addButton?.addEventListener("click", function () {
     let commentText = input.value.trim();
 
     if (commentText) {

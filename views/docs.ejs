@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini SNS - Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/js/lib/marked.min.js"></script>
+    <link rel="stylesheet" href="/css/lib/atom-one-dark.min.css" />
+    <script src="/js/lib/highlight.min.js"></script>
+    <%- include('components/_gfont.ejs') %> <%-
+    include('components/_ui-helpers') %>
+    <link rel="stylesheet" href="/css/bg.css" />
+    <style>
+      /* Layout Overrides */
+      .app-body {
+        padding-top: 4rem; /* Keep header space */
+        padding-bottom: 0; /* Remove footer space for full height */
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .docs-layout {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+        margin-top: 2px; /* Border offset */
+      }
+
+      /* Sidebar */
+      .docs-sidebar {
+        width: 280px;
+        background: rgba(13, 17, 23, 0.95);
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        flex-shrink: 0;
+        backdrop-filter: blur(10px);
+      }
+
+      .docs-nav-item {
+        display: block;
+        padding: 0.75rem 1.5rem;
+        color: #9ca3af;
+        text-decoration: none;
+        border-left: 3px solid transparent;
+        transition: all 150ms ease;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+
+      .docs-nav-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #e0f2fe;
+      }
+
+      .docs-nav-item.active {
+        background: rgba(14, 165, 233, 0.1);
+        border-left-color: #0ea5e9;
+        color: #38bdf8;
+        font-weight: 600;
+      }
+
+      .docs-nav-header {
+        padding: 1.5rem 1.5rem 0.5rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #6b7280;
+        font-weight: 700;
+      }
+
+      /* Main Content */
+      .docs-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 2rem 3rem;
+        background: rgba(17, 24, 39, 0.6);
+        scroll-behavior: smooth;
+      }
+
+      .docs-article {
+        max-width: 65ch; /* Optimal reading width */
+        margin: 0 auto;
+        padding-bottom: 4rem;
+      }
+
+      /* Typography & Markdown Styling */
+      .docs-article h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #e0f2fe;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+      }
+      .docs-article h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #bae6fd;
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 0.5rem;
+      }
+      .docs-article h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #7dd3fc;
+        margin-top: 2rem;
+        margin-bottom: 0.75rem;
+      }
+      .docs-article p {
+        color: #d1d5db;
+        line-height: 1.75;
+        margin-bottom: 1.25rem;
+        font-size: 1.05rem;
+      }
+      .docs-article ul,
+      .docs-article ol {
+        color: #d1d5db;
+        margin-bottom: 1.25rem;
+        padding-left: 1.5rem;
+        line-height: 1.7;
+      }
+      .docs-article li {
+        margin-bottom: 0.5rem;
+      }
+      .docs-article ul {
+        list-style-type: disc;
+      }
+      .docs-article ol {
+        list-style-type: decimal;
+      }
+      .docs-article code {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.2em 0.4em;
+        border-radius: 0.25em;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          monospace;
+        font-size: 0.9em;
+        color: #f472b6;
+      }
+      .docs-article pre {
+        background: #1e293b;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+        margin: 1.5rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .docs-article pre code {
+        background: transparent;
+        padding: 0;
+        color: inherit;
+        font-size: 0.9rem;
+      }
+      .docs-article blockquote {
+        border-left: 4px solid #0ea5e9;
+        background: rgba(14, 165, 233, 0.1);
+        padding: 1rem 1.5rem;
+        margin: 1.5rem 0;
+        border-radius: 0 0.5rem 0.5rem 0;
+        font-style: italic;
+      }
+      .docs-article a {
+        color: #38bdf8;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .docs-article a:hover {
+        color: #7dd3fc;
+      }
+
+      /* Table Styling (Preserved & Enhanced) */
+      .docs-article table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 2rem 0;
+        font-size: 0.95rem;
+      }
+      .docs-article th,
+      .docs-article td {
+        padding: 0.875rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: left;
+        color: #d1d5db;
+      }
+      .docs-article th {
+        background: rgba(14, 165, 233, 0.15);
+        font-weight: 600;
+        color: #e0f2fe;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+      }
+      .docs-article tr:hover td {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .docs-layout {
+          flex-direction: column;
+        }
+        .docs-sidebar {
+          width: 100%;
+          height: auto;
+          max-height: 200px;
+          border-right: none;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .docs-content {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body class="app-body">
+    <%- include('components/_header', { username: username }) %> <% const
+    defaultLang = englishDocs.length ? 'en' : (spanishDocs.length ? 'es' :
+    'en'); %>
+
+    <div class="docs-layout">
+      <!-- Sidebar -->
+      <aside class="docs-sidebar">
+        <div class="p-4 border-b border-gray-800">
+          <div class="flex gap-2 bg-gray-800 p-1 rounded-lg">
+            <button
+              onclick="setLanguage('en')"
+              data-lang-btn="en"
+              class="flex-1 py-1.5 text-sm font-medium rounded-md transition-colors text-center"
+            >
+              English
+            </button>
+            <button
+              onclick="setLanguage('es')"
+              data-lang-btn="es"
+              class="flex-1 py-1.5 text-sm font-medium rounded-md transition-colors text-center"
+            >
+              Español
+            </button>
+          </div>
+        </div>
+
+        <nav class="flex-1 py-2">
+          <div data-nav-list="en" class="hidden">
+            <div class="docs-nav-header">Guides</div>
+            <% englishDocs.forEach((doc, index) => { %>
+            <a
+              class="docs-nav-item"
+              onclick="showDoc('en', '<%= index %>')"
+              data-nav-item="en-<%= index %>"
+            >
+              <%= doc.title %>
+            </a>
+            <% }) %>
+          </div>
+
+          <div data-nav-list="es" class="hidden">
+            <div class="docs-nav-header">Guías</div>
+            <% spanishDocs.forEach((doc, index) => { %>
+            <a
+              class="docs-nav-item"
+              onclick="showDoc('es', '<%= index %>')"
+              data-nav-item="es-<%= index %>"
+            >
+              <%= doc.title %>
+            </a>
+            <% }) %>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="docs-content">
+        <% if (!englishDocs.length && !spanishDocs.length) { %>
+        <div class="flex items-center justify-center h-full text-gray-400">
+          <p>No documentation found.</p>
+        </div>
+        <% } %>
+
+        <!-- English Docs -->
+        <% englishDocs.forEach((doc, index) => { %>
+        <article id="doc-content-en-<%= index %>" class="docs-article hidden">
+          <div class="hidden doc-raw"><%= doc.content %></div>
+          <div class="doc-rendered"></div>
+        </article>
+        <% }) %>
+
+        <!-- Spanish Docs -->
+        <% spanishDocs.forEach((doc, index) => { %>
+        <article id="doc-content-es-<%= index %>" class="docs-article hidden">
+          <div class="hidden doc-raw"><%= doc.content %></div>
+          <div class="doc-rendered"></div>
+        </article>
+        <% }) %>
+      </main>
+    </div>
+
+    <!-- No Footer on Docs page for cleaner layout -->
+
+    <script>
+      // State Management
+      let currentLang = "<%= defaultLang %>";
+      let currentIndex = 0;
+
+      // Markdown Rendering
+      const renderer = new marked.Renderer();
+      const originalLink = renderer.link;
+      renderer.link = function (tokenOrHref, title, text) {
+        let href = tokenOrHref;
+        let linkTitle = title;
+        let linkText = text;
+
+        // Handle new marked version signature (object)
+        if (typeof tokenOrHref === "object" && tokenOrHref !== null) {
+          href = tokenOrHref.href;
+          linkTitle = tokenOrHref.title;
+          linkText = tokenOrHref.text;
+        }
+
+        const safeHref = String(href || "#");
+        const target = safeHref.startsWith("#")
+          ? ""
+          : ' target="_blank" rel="noreferrer"';
+        const titleAttr = linkTitle ? ` title="${linkTitle}"` : "";
+        return `<a href="${safeHref}"${titleAttr}${target}>${linkText}</a>`;
+      };
+
+      // Custom Heading Renderer for IDs
+      renderer.heading = function (textOrToken, level) {
+        let text = textOrToken;
+        let depth = level;
+
+        if (typeof textOrToken === "object" && textOrToken !== null) {
+          text = textOrToken.text;
+          depth = textOrToken.depth;
+        }
+
+        const id = text
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/[\s_-]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+
+        return `<h${depth} id="${id}">${text}</h${depth}>`;
+      };
+
+      // Render all docs on load
+      document.querySelectorAll(".docs-article").forEach((article) => {
+        const rawContent = article.querySelector(".doc-raw")?.textContent ?? "";
+        const rendered = article.querySelector(".doc-rendered");
+        rendered.innerHTML = marked.parse(rawContent, { renderer });
+        rendered.querySelectorAll("pre code").forEach((block) => {
+          hljs.highlightElement(block);
+        });
+      });
+
+      function setLanguage(lang) {
+        currentLang = lang;
+
+        // Update Toggle Buttons
+        document.querySelectorAll("[data-lang-btn]").forEach((btn) => {
+          const isActive = btn.dataset.langBtn === lang;
+          btn.className = isActive
+            ? "flex-1 py-1.5 text-sm font-medium rounded-md transition-colors text-center bg-cyan-600 text-white shadow-sm"
+            : "flex-1 py-1.5 text-sm font-medium rounded-md transition-colors text-center text-gray-400 hover:text-gray-200 hover:bg-gray-700";
+        });
+
+        // Show/Hide Nav Lists
+        document.querySelectorAll("[data-nav-list]").forEach((list) => {
+          list.classList.toggle("hidden", list.dataset.navList !== lang);
+        });
+
+        // Reset to first doc if switching lang
+        showDoc(lang, 0);
+      }
+
+      function showDoc(lang, index) {
+        // Hide all articles
+        document.querySelectorAll(".docs-article").forEach((el) => {
+          el.classList.add("hidden");
+        });
+
+        // Show target article
+        const target = document.getElementById(`doc-content-${lang}-${index}`);
+        if (target) {
+          target.classList.remove("hidden");
+          // Scroll to top
+          document.querySelector(".docs-content").scrollTop = 0;
+        }
+
+        // Update Nav Active State
+        document.querySelectorAll(".docs-nav-item").forEach((item) => {
+          item.classList.remove("active");
+        });
+        const activeNav = document.querySelector(
+          `[data-nav-item="${lang}-${index}"]`
+        );
+        if (activeNav) activeNav.classList.add("active");
+      }
+
+      // Initialize
+      setLanguage(currentLang);
+    </script>
+  </body>
+</html>

@@ -5,68 +5,189 @@
     <title>Profile - Mini SNS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google font component class:font-body-gamer -->
-    <%- include('components/_gfont.ejs') %>
-    <link rel="stylesheet" href="./css/bg.css" />
+    <%- include('components/_gfont.ejs') %> <%-
+    include('components/_ui-helpers') %>
+    <link rel="stylesheet" href="/css/bg.css" />
   </head>
-  <body
-    class="animated-bg text-white min-h-screen relative pb-20 pt-16 font-body-gamer"
-  >
+  <body class="app-body">
     <%- include('components/_header', { username: username }) %>
 
-    <main
-      class="p-8 m-10 bg-gray-600/80 rounded-xl max-w-2xl mx-auto shadow-2xl backdrop-blur-md"
-    >
-      <h1 class="text-4xl font-extrabold text-center mb-10 text-cyan-200">
-        👤 <%= username %>
-      </h1>
+    <main class="page-shell page-shell--narrow space-y-8">
+      <!-- Flash Messages -->
+      <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+      <div
+        class="bg-green-900/50 border border-green-500 text-green-200 px-4 py-3 rounded-lg text-center"
+      >
+        <%= successMessage %>
+      </div>
+      <% } %> <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+      <div
+        class="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-lg text-center"
+      >
+        <%= errorMessage %>
+      </div>
+      <% } %>
 
-      <div class="flex justify-start mb-8">
-        <a
-          href="/"
-          class="py-2 px-4 bg-gray-500 hover:bg-gray-700 rounded-lg text-white font-semibold transition-colors shadow-md"
+      <!-- Profile Header -->
+      <div class="flex flex-col items-center space-y-4">
+        <div class="relative group">
+          <img
+            src="<%= user.avatarPath ? user.avatarPath : '/images/default-avatar.svg' %>"
+            alt="<%= username %>'s avatar"
+            class="w-32 h-32 rounded-full border-4 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.5)] bg-gray-800 object-cover"
+          />
+          <button
+            onclick="document.getElementById('avatar-modal').classList.remove('hidden')"
+            class="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer border-none w-full h-full"
+          >
+            <span class="text-xs text-white font-bold">Change</span>
+          </button>
+        </div>
+
+        <div class="text-center">
+          <h1 class="text-4xl font-bold text-white tracking-tight">
+            <%= username %>
+          </h1>
+          <p class="text-cyan-300 font-medium">
+            @<%= username.toLowerCase() %>
+          </p>
+        </div>
+
+        <div
+          class="flex gap-4 text-sm text-gray-400 bg-gray-900/50 px-6 py-2 rounded-full border border-gray-700/50"
         >
-          ← Go Back Home
-        </a>
+          <span>Joined <%= user.joinedDate || 'May 2024' %></span>
+          <span>•</span>
+          <span><%= posts.length %> Posts</span>
+        </div>
       </div>
 
-      <div
-        class="bg-gray-700/70 p-8 rounded-xl shadow-lg border border-gray-600 space-y-4"
-      >
-        <h2
-          class="text-2xl font-semibold text-gray-100 border-b border-gray-500 pb-2"
-        >
-          Account Details
-        </h2>
+      <div class="action-row action-row--left">
+        <a href="/" class="btn btn-secondary">← Go Back Home</a>
+      </div>
 
-        <p class="text-lg text-gray-300">
-          <span class="font-bold text-cyan-300 w-32 inline-block"
-            >Username:</span
+      <div class="grid gap-6">
+        <!-- Bio Section -->
+        <div class="content-card">
+          <h2
+            class="text-xl font-bold text-gray-100 mb-4 flex items-center gap-2"
           >
-          <%= username %>
-        </p>
-
-        <p class="text-lg text-gray-300">
-          <span class="font-bold text-cyan-300 w-32 inline-block"
-            >Member Since:</span
-          >
-          2024-05-15 (Static)
-        </p>
-
-        <p class="text-lg text-gray-300">
-          <span class="font-bold text-cyan-300 w-32 inline-block"
-            >Total Posts:</span
-          >
-          4 (Mock Count)
-        </p>
-
-        <div class="pt-6 border-t border-gray-500 mt-6">
-          <p class="text-gray-400 italic">
-            This is your private profile view. You can add editing options here
-            later.
+            <span>📝</span> Bio
+          </h2>
+          <p class="text-gray-300 leading-relaxed">
+            <%= user.bio || "No bio yet." %>
           </p>
+        </div>
+
+        <!-- Posts Section -->
+        <div class="space-y-4">
+          <h2
+            class="text-xl font-bold text-gray-100 pl-2 border-l-4 border-cyan-400"
+          >
+            Recent Posts
+          </h2>
+
+          <% if (posts.length === 0) { %>
+          <div class="content-card text-center py-8">
+            <p class="text-gray-400 mb-4">No posts yet.</p>
+            <a href="/write" class="btn btn-primary">Create your first post</a>
+          </div>
+          <% } else { %> <% posts.forEach(post => { %>
+          <div class="content-card hover:border-cyan-500/30 transition-colors">
+            <div class="flex items-start gap-3">
+              <img
+                src="<%= user.avatarPath ? user.avatarPath : '/images/default-avatar.svg' %>"
+                class="w-10 h-10 rounded-full bg-gray-800 object-cover"
+                alt="avatar"
+              />
+              <div>
+                <div class="flex items-baseline gap-2">
+                  <span class="font-bold text-gray-200"
+                    ><%= post.username %></span
+                  >
+                  <span class="text-xs text-gray-500">Just now</span>
+                </div>
+                <p class="text-gray-300 mt-1"><%= post.content %></p>
+              </div>
+            </div>
+          </div>
+          <% }) %> <% } %>
         </div>
       </div>
     </main>
+
+    <!-- Avatar Upload Modal -->
+    <div
+      id="avatar-modal"
+      class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4"
+    >
+      <div
+        class="content-card max-w-md w-full relative animate-[fadeIn_0.2s_ease-out]"
+      >
+        <button
+          onclick="document.getElementById('avatar-modal').classList.add('hidden')"
+          class="absolute top-4 right-4 text-gray-400 hover:text-white"
+        >
+          ✕
+        </button>
+
+        <h2 class="text-2xl font-bold text-white mb-6 text-center">
+          Update Profile Picture
+        </h2>
+
+        <form
+          action="/profile/avatar"
+          method="post"
+          enctype="multipart/form-data"
+          class="space-y-6"
+        >
+          <div class="space-y-2">
+            <label for="avatar" class="block text-sm font-medium text-gray-300"
+              >Select Image</label
+            >
+            <input
+              type="file"
+              id="avatar"
+              name="avatar"
+              accept="image/png, image/jpeg, image/webp"
+              required
+              class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-600 file:text-white hover:file:bg-cyan-700 cursor-pointer"
+            />
+            <p class="text-xs text-gray-500">
+              Max size: 2MB. Formats: JPG, PNG, WEBP
+            </p>
+          </div>
+
+          <div class="flex gap-4 pt-2">
+            <button
+              type="button"
+              onclick="document.getElementById('avatar-modal').classList.add('hidden')"
+              class="btn btn-secondary flex-1"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary flex-1">Upload</button>
+          </div>
+        </form>
+
+        <% if (user && user.avatarPath) { %>
+        <div class="border-t border-gray-700 mt-6 pt-6">
+          <form
+            action="/profile/avatar/delete"
+            method="post"
+            onsubmit="return confirm('Are you sure you want to delete your avatar?');"
+          >
+            <button
+              type="submit"
+              class="w-full btn bg-red-600 hover:bg-red-700 text-white"
+            >
+              🗑️ Delete Current Avatar
+            </button>
+          </form>
+        </div>
+        <% } %>
+      </div>
+    </div>
 
     <%- include('components/_footer') %>
   </body>

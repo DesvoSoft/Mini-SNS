@@ -1,0 +1,39 @@
+<style type="text/tailwindcss">
+  @layer components {
+    .category-wrap {
+      @apply bg-gray-900/40 border border-cyan-700/70 rounded-xl p-4 shadow-lg backdrop-blur;
+    }
+
+    .category-title {
+      @apply text-sm uppercase tracking-[0.25em] text-cyan-200 font-semibold flex items-center gap-2 mb-2;
+    }
+
+    .category-grid {
+      @apply flex flex-wrap gap-3;
+    }
+
+    .category-pill {
+      @apply inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-900/60 text-cyan-100 border border-cyan-500/70 shadow-sm shadow-cyan-500/30 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-cyan-500/30;
+    }
+
+    .category-dot {
+      @apply w-2 h-2 rounded-full bg-lime-400 shadow-[0_0_8px_theme('colors.lime.300')];
+    }
+  }
+</style>
+
+<div class="category-wrap">
+  <p class="category-title">
+    <span class="category-dot"></span>
+    <span>Categories</span>
+  </p>
+
+  <div class="category-grid">
+    <% categories.forEach(function (category) { %>
+    <span class="category-pill">
+      <span class="category-dot"></span>
+      <span class="leading-none"><%= category %></span>
+    </span>
+    <% }); %>
+  </div>
+</div>

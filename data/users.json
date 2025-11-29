@@ -1,0 +1,44 @@
+{
+  "users": [
+    {
+      "username": "Desvo",
+      "password": "123",
+      "avatarPath": null,
+      "bio": "Hello! I'm Desvo. This is my journey in building cool things with EJS and Node.js. Always learning, always coding!",
+      "joinedDate": "2024-05-01",
+      "redirect": "/"
+    },
+    {
+      "username": "Tom",
+      "password": "123456",
+      "avatarPath": null,
+      "bio": "Hello! I'm Tom. I love coding, coffee, and building amazing web applications. Let's connect!",
+      "joinedDate": "2024-05-15",
+      "redirect": "/posts"
+    },
+    {
+      "username": "Alice",
+      "password": "alice123",
+      "avatarPath": null,
+      "bio": "K-Lab enthusiast! Passionate about web development and design.",
+      "joinedDate": "2024-05-20",
+      "redirect": "/posts"
+    },
+    {
+      "username": "Wendy",
+      "password": "wendy123",
+      "avatarPath": null,
+      "bio": "Learning EJS and loving every moment of it. Let's build something great together!",
+      "joinedDate": "2024-06-01",
+      "redirect": "/posts"
+    },
+    {
+      "username": "Johan",
+      "password": "johan123",
+      "avatarPath": null,
+      "bio": "감사합니다 - Thank you for visiting my profile!",
+      "joinedDate": "2024-06-10",
+      "redirect": "/posts"
+    }
+  ]
+}

@@ -2,9 +2,25 @@
   <div
     class="bg-black/70 p-6 rounded-xl shadow-lg border border-cyan-700 transition duration-300 hover:bg-black/80 backdrop-blur-md"
   >
-    <p class="text-xl font-bold text-cyan-500 mb-2 font-title-gamer">
-      <%= post.username %>
-    </p>
+    <div class="flex items-center gap-3 mb-2">
+      <% if (typeof authorAvatars !== 'undefined' && authorAvatars[post.author])
+      { %>
+      <img
+        src="<%= authorAvatars[post.author] %>"
+        alt="<%= post.author %>"
+        class="w-10 h-10 rounded-full border border-cyan-500 object-cover"
+      />
+      <% } else { %>
+      <div
+        class="w-10 h-10 rounded-full border border-cyan-700 bg-gray-800 flex items-center justify-center text-cyan-500 font-bold"
+      >
+        <%= post.author.charAt(0).toUpperCase() %>
+      </div>
+      <% } %>
+      <p class="text-xl font-bold text-cyan-500 font-title-gamer m-0">
+        <%= post.author || post.username %>
+      </p>
+    </div>
 
     <div
       class="text-lg text-gray-100 leading-relaxed border-t border-cyan-700 pt-4 mt-4 font-body-gamer"
@@ -15,27 +31,44 @@
     <div
       class="flex justify-between items-center mt-4 pt-3 border-t border-gray-600"
     >
-      <div class="text-sm font-semibold text-cyan-400 font-body-gamer">
-        [ COMMENTS ]
+      <div
+        class="text-sm font-semibold text-cyan-400 font-body-gamer comment-count"
+      >
+        Comments (<%= post.comments ? post.comments.length : 0 %>)
       </div>
     </div>
 
     <div class="mt-4 flex space-x-2 items-center">
-      <input
-        type="text"
-        class="comment-input w-full p-2 text-sm text-lime-300 bg-black border border-cyan-700 rounded-md focus:ring-2 focus:ring-lime-500 outline-none font-body-gamer placeholder-gray-500"
-        placeholder="Write a comment"
-      />
-
-      <button
-        class="add-comment bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-semibold py-2 px-4 rounded-md transition-colors shadow-sm font-title-gamer"
+      <form
+        action="/posts/<%= post.uuid %>/comments"
+        method="POST"
+        class="w-full flex space-x-2"
       >
-        Submit
-      </button>
+        <input
+          type="text"
+          name="content"
+          class="comment-input w-full p-2 text-sm text-lime-300 bg-black border border-cyan-700 rounded-md focus:ring-2 focus:ring-lime-500 outline-none font-body-gamer placeholder-gray-500"
+          placeholder="Write a comment"
+          required
+        />
+
+        <button
+          type="submit"
+          class="add-comment bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-semibold py-2 px-4 rounded-md transition-colors shadow-sm font-title-gamer"
+        >
+          Submit
+        </button>
+      </form>
     </div>
 
-    <div
-      class="comments mt-4 space-y-2 text-gray-300 text-sm font-body-gamer"
-    ></div>
+    <div class="comments mt-4 space-y-2 text-gray-300 text-sm font-body-gamer">
+      <% if (post.comments && post.comments.length > 0) { %> <%
+      post.comments.forEach(function(comment) { %>
+      <div class="comment border-b border-gray-700 pb-2">
+        <span class="font-bold text-cyan-400"><%= comment.author %>:</span>
+        <span class="text-gray-200"><%= comment.content %></span>
+      </div>
+      <% }); %> <% } %>
+    </div>
   </div>
 </div>
