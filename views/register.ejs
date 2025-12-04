@@ -8,6 +8,7 @@
     <%- include('components/_gfont.ejs') %> <%-
     include('components/_ui-helpers') %>
     <link rel="stylesheet" href="/css/bg.css" />
+    <link rel="stylesheet" href="/css/register.css" />
     <style>
       @layer utilities {
         .text-shadow {
@@ -93,18 +94,15 @@
             </div>
 
             <div>
-              <label for="email" class="input-label">Email</label>
+              <label for="name" class="input-label">Full Name</label>
               <input
-                type="email"
-                name="email"
-                id="email"
-                placeholder="your.email@example.com"
+                type="text"
+                name="name"
+                id="name"
+                placeholder="Your Name"
                 required
                 class="input-field font-mono"
               />
-              <p class="text-xs text-gray-400 mt-1">
-                We'll never share your email
-              </p>
             </div>
 
             <div>
