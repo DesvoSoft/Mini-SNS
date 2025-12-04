@@ -15,6 +15,7 @@ const feedSchema = new mongoose.Schema(
         createdAt: { type: Date, default: Date.now },
       },
     ],
+    likes: { type: [String], default: [] },
     createdAt: { type: Date, default: Date.now },
   },
   { collection: "feed" }

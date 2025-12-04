@@ -8,6 +8,7 @@ const morgan = require("morgan"); // --- Logs HTTP en consola
 const cookieParser = require("cookie-parser"); // --- Manejo de cookies
 const session = require("express-session"); // --- Manejo de sesiones
 const multer = require("multer"); // --- Manejo de subida de archivos
+const bcrypt = require("bcrypt"); // --- Hashing de contraseñas
 
 const Feed = require("./models/feed");
 const User = require("./models/user");
@@ -130,21 +131,63 @@ function isAuthenticated(req, res, next) {
   res.redirect("/");
 }
 
+// =============================== REGISTRATION ===============================
+app.get("/register", (req, res) => {
+  if (req.session.username) {
+    return res.redirect("/posts");
+  }
+  res.render("register", { error: null });
+});
+
+app.post("/register", async (req, res) => {
+  const { username, password, name } = req.body;
+
+  try {
+    // Check if user already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.render("register", { error: "Username already taken" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const newUser = await User.create({
+      username,
+      password: hashedPassword,
+      name,
+      friends: [],
+    });
+
+    // Auto-login
+    req.session.username = newUser.username;
+    req.session.avatarPath = newUser.avatarPath;
+    res.redirect("/posts");
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.render("register", { error: "Error creating account" });
+  }
+});
+
 // =============================== AUTENTICACION ===============================
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const user = await User.findOne({ username, password });
+    const user = await User.findOne({ username });
 
     if (user) {
-      req.session.username = user.username;
-      req.session.avatarPath = user.avatarPath;
-      return res.redirect(user.redirect);
-    } else {
-      req.session.loginError = "Usuario o contraseña incorrectos.";
-      return res.redirect("/");
+      const match = await bcrypt.compare(password, user.password);
+      if (match) {
+        req.session.username = user.username;
+        req.session.avatarPath = user.avatarPath;
+        return res.redirect(user.redirect);
+      }
     }
+
+    req.session.loginError = "Usuario o contraseña incorrectos.";
+    return res.redirect("/");
   } catch (error) {
     console.error("Login error:", error);
     req.session.loginError = "Error en el servidor.";
@@ -161,6 +204,73 @@ app.get("/logout", (req, res) => {
     res.clearCookie("connect.sid"); // --- Limpia cookie de sesion
     res.redirect("/");
   });
+});
+
+// =============================== FRIENDS ===============================
+app.get("/friends/list", isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.session.username });
+    const friends = await User.find({ username: { $in: user.friends } });
+
+    res.render("friends", {
+      username: req.session.username,
+      avatarPath: req.session.avatarPath,
+      friends: friends,
+      searchResults: [],
+    });
+  } catch (error) {
+    console.error("Error fetching friends:", error);
+    res.redirect("/posts");
+  }
+});
+
+app.post("/friends/search", isAuthenticated, async (req, res) => {
+  const { searchQuery } = req.body;
+  try {
+    const currentUser = await User.findOne({ username: req.session.username });
+    const friends = await User.find({ username: { $in: currentUser.friends } });
+
+    let searchResults = [];
+    if (searchQuery) {
+      searchResults = await User.find({
+        username: {
+          $regex: searchQuery,
+          $options: "i",
+          $ne: req.session.username, // Exclude self
+          $nin: currentUser.friends, // Exclude existing friends
+        },
+      });
+    }
+
+    res.render("friends", {
+      username: req.session.username,
+      avatarPath: req.session.avatarPath,
+      friends: friends,
+      searchResults: searchResults,
+    });
+  } catch (error) {
+    console.error("Error searching friends:", error);
+    res.redirect("/friends/list");
+  }
+});
+
+app.post("/friends/add", isAuthenticated, async (req, res) => {
+  const { friendUsername } = req.body;
+  try {
+    const currentUser = await User.findOne({ username: req.session.username });
+
+    if (!currentUser.friends.includes(friendUsername)) {
+      await User.updateOne(
+        { username: req.session.username },
+        { $push: { friends: friendUsername } }
+      );
+    }
+
+    res.redirect("/friends/list");
+  } catch (error) {
+    console.error("Error adding friend:", error);
+    res.redirect("/friends/list");
+  }
 });
 
 // =============================== PERFIL ===============================
@@ -301,8 +411,13 @@ app.get("/", (req, res) => {
 // Posts Feed - Display all posts sorted by newest first
 app.get("/posts", isAuthenticated, async (req, res) => {
   try {
-    // Fetch all posts from MongoDB, sorted by creation date (newest first)
-    const posts = await Feed.find().sort({ createdAt: -1 });
+    // Fetch current user to get friends list
+    const currentUser = await User.findOne({ username: req.session.username });
+
+    // Filter posts: author is either the current user or one of their friends
+    const posts = await Feed.find({
+      author: { $in: [...currentUser.friends, req.session.username] },
+    }).sort({ createdAt: -1 });
 
     // Collect all unique authors from posts
     const authors = [...new Set(posts.map((post) => post.author))];
@@ -380,6 +495,47 @@ app.post("/posts/:uuid/comments", async (req, res) => {
   }
 
   res.redirect("/posts");
+});
+
+// Like Post - Toggle like status
+app.post("/posts/:uuid/like", async (req, res) => {
+  if (!req.session.username) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  const { uuid } = req.params;
+  const username = req.session.username;
+
+  try {
+    const post = await Feed.findOne({ uuid });
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    const likeIndex = post.likes.indexOf(username);
+    let liked = false;
+
+    if (likeIndex === -1) {
+      // Add like
+      post.likes.push(username);
+      liked = true;
+    } else {
+      // Remove like
+      post.likes.splice(likeIndex, 1);
+      liked = false;
+    }
+
+    await post.save();
+
+    res.json({
+      success: true,
+      likesCount: post.likes.length,
+      liked: liked,
+    });
+  } catch (error) {
+    console.error("Error toggling like:", error);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 // Write

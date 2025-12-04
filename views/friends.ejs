@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini SNS - Friends</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <%- include('components/_gfont.ejs') %> <%-
+    include('components/_ui-helpers') %>
+    <link rel="stylesheet" href="/css/bg.css" />
+    <link rel="stylesheet" href="/css/friends.css" />
+  </head>
+  <body class="app-body">
+    <%- include('components/_header', { username: username }) %>
+
+    <main class="page-shell space-y-8">
+      <h1 class="page-title">Friends</h1>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Search Section -->
+        <div class="content-card space-y-6">
+          <h2 class="text-xl font-bold text-cyan-100">Find Friends</h2>
+
+          <form action="/friends/search" method="POST" class="flex gap-2">
+            <input
+              type="text"
+              name="searchQuery"
+              placeholder="Search by username..."
+              class="input-field flex-1 font-mono"
+              required
+            />
+            <button type="submit" class="btn-primary">Search</button>
+          </form>
+
+          <% if (typeof searchResults !== 'undefined' && searchResults.length >
+          0) { %>
+          <div class="space-y-4 mt-4">
+            <h3
+              class="text-sm font-semibold text-gray-400 uppercase tracking-wider"
+            >
+              Results
+            </h3>
+            <% searchResults.forEach(user => { %>
+            <div
+              class="friend-item flex items-center justify-between p-3 rounded-lg bg-black/20"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-full bg-cyan-900/50 flex items-center justify-center overflow-hidden border border-cyan-500/30"
+                >
+                  <% if (user.avatarPath) { %>
+                  <img
+                    src="<%= user.avatarPath %>"
+                    alt="<%= user.username %>"
+                    class="w-full h-full object-cover"
+                  />
+                  <% } else { %>
+                  <span class="text-lg">👤</span>
+                  <% } %>
+                </div>
+                <div>
+                  <p class="font-semibold text-cyan-100"><%= user.name %></p>
+                  <p class="text-xs text-gray-400">@<%= user.username %></p>
+                </div>
+              </div>
+              <form action="/friends/add" method="POST">
+                <input
+                  type="hidden"
+                  name="friendUsername"
+                  value="<%= user.username %>"
+                />
+                <button type="submit" class="btn-sm-success">Add</button>
+              </form>
+            </div>
+            <% }) %>
+          </div>
+          <% } else if (typeof searchResults !== 'undefined') { %>
+          <p class="text-gray-400 text-center py-4">No users found.</p>
+          <% } %>
+        </div>
+
+        <!-- My Friends List -->
+        <div class="content-card space-y-6">
+          <h2 class="text-xl font-bold text-cyan-100">My Friends</h2>
+
+          <% if (friends && friends.length > 0) { %>
+          <div class="space-y-3">
+            <% friends.forEach(friend => { %>
+            <div
+              class="friend-item flex items-center justify-between p-3 rounded-lg bg-black/20"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-full bg-cyan-900/50 flex items-center justify-center overflow-hidden border border-cyan-500/30"
+                >
+                  <% if (friend.avatarPath) { %>
+                  <img
+                    src="<%= friend.avatarPath %>"
+                    alt="<%= friend.username %>"
+                    class="w-full h-full object-cover"
+                  />
+                  <% } else { %>
+                  <span class="text-lg">👤</span>
+                  <% } %>
+                </div>
+                <div>
+                  <p class="font-semibold text-cyan-100"><%= friend.name %></p>
+                  <p class="text-xs text-gray-400">@<%= friend.username %></p>
+                </div>
+              </div>
+              <span
+                class="text-xs text-green-400 bg-green-900/20 px-2 py-1 rounded-full border border-green-500/30"
+                >Friend</span
+              >
+            </div>
+            <% }) %>
+          </div>
+          <% } else { %>
+          <div class="text-center py-8 text-gray-400">
+            <p class="text-4xl mb-2">👥</p>
+            <p>You haven't added any friends yet.</p>
+            <p class="text-sm mt-2">Search for users to connect!</p>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+
+    <%- include('components/_footer') %>
+  </body>
+</html>

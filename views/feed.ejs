@@ -31,6 +31,20 @@
     <div
       class="flex justify-between items-center mt-4 pt-3 border-t border-gray-600"
     >
+      <button
+        class="like-btn flex items-center gap-2 text-gray-400 hover:text-red-500 transition-colors group"
+        data-uuid="<%= post.uuid %>"
+      >
+        <span
+          class="heart-icon text-xl group-hover:scale-110 transition-transform"
+        >
+          <%= post.likes && post.likes.includes(username) ? '❤️' : '🤍' %>
+        </span>
+        <span class="like-count font-semibold font-body-gamer">
+          <%= post.likes ? post.likes.length : 0 %>
+        </span>
+      </button>
+
       <div
         class="text-sm font-semibold text-cyan-400 font-body-gamer comment-count"
       >
