@@ -7,7 +7,6 @@ const feedSchema = new mongoose.Schema(
   {
     uuid: { type: String, default: uuidv4, required: true },
     content: { type: String, required: true },
-    content: { type: String, required: true },
     author: { type: String, required: true },
     privacy: {
       type: String,

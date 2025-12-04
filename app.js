@@ -26,8 +26,15 @@ async function seedUsers() {
         const data = fs.readFileSync(DATA_FILE, "utf-8");
         const users = JSON.parse(data).users || [];
         if (users.length > 0) {
-          await User.insertMany(users);
-          console.log("Users seeded from JSON file.");
+          // Hash passwords before inserting
+          const hashedUsers = await Promise.all(
+            users.map(async (user) => {
+              const hashedPassword = await bcrypt.hash(user.password, 10);
+              return { ...user, password: hashedPassword };
+            })
+          );
+          await User.insertMany(hashedUsers);
+          console.log("Users seeded from JSON file with hashed passwords.");
         }
       }
     }
@@ -479,7 +486,6 @@ app.post("/posts", async (req, res) => {
     try {
       // Create new post in MongoDB with author and content
       await Feed.create({
-        username: req.session.username, // Note: Schema says 'author', let's check
         author: req.session.username,
         content,
         privacy,
