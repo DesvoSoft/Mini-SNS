@@ -113,15 +113,42 @@ app.use(express.urlencoded({ extended: true })); // --- Procesa datos de formula
 
 const mongoose = require("mongoose");
 
-mongoose
-  .connect("mongodb://localhost:27017/mydb")
-  .then(async () => {
-    console.log("Connected to MongoDB");
-    await seedUsers();
-  })
-  .catch((error) => {
-    console.error("Error connecting to MongoDB:", error);
-  });
+const dbURI = "mongodb://localhost:27017/mydb";
+
+const connectWithRetry = () => {
+  console.log("Attempting to connect to MongoDB...");
+  mongoose
+    .connect(dbURI, {
+      serverSelectionTimeoutMS: 3000, // Fail after 3 seconds
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+    })
+    .then(async () => {
+      console.log("Connected to MongoDB");
+      await seedUsers();
+    })
+    .catch((error) => {
+      console.error(
+        "Error connecting to MongoDB. Retrying in 5 seconds...",
+        error.message
+      );
+      setTimeout(connectWithRetry, 5000);
+    });
+};
+
+// Connection events
+mongoose.connection.on("connected", () => {
+  console.log("Mongoose connected to " + dbURI);
+});
+
+mongoose.connection.on("error", (err) => {
+  console.log("Mongoose connection error: " + err);
+});
+
+mongoose.connection.on("disconnected", () => {
+  console.log("Mongoose disconnected");
+});
+
+connectWithRetry();
 
 // =============================== MIDDLEWARE HELPER ===============================
 function isAuthenticated(req, res, next) {
@@ -175,6 +202,11 @@ app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
+    if (mongoose.connection.readyState !== 1) {
+      req.session.loginError = "Database unavailable. Please try again later.";
+      return res.redirect("/");
+    }
+
     const user = await User.findOne({ username });
 
     if (user) {
@@ -408,18 +440,10 @@ app.get("/", (req, res) => {
   });
 });
 
-// Posts Feed - Display all posts sorted by newest first
+// =============================== POSTS ===============================
 app.get("/posts", isAuthenticated, async (req, res) => {
   try {
-    // Fetch current user to get friends list
-    const currentUser = await User.findOne({ username: req.session.username });
-
-    // Filter posts: author is either the current user or one of their friends
-    const posts = await Feed.find({
-      author: { $in: [...currentUser.friends, req.session.username] },
-    }).sort({ createdAt: -1 });
-
-    // Collect all unique authors from posts
+    const posts = await Feed.find().sort({ createdAt: -1 });
     const authors = [...new Set(posts.map((post) => post.author))];
 
     // Fetch avatar paths for these authors
@@ -449,6 +473,7 @@ app.post("/posts", async (req, res) => {
   }
 
   const content = req.body.content?.trim();
+  const privacy = req.body.privacy || "public";
 
   if (content) {
     try {
@@ -457,6 +482,7 @@ app.post("/posts", async (req, res) => {
         username: req.session.username, // Note: Schema says 'author', let's check
         author: req.session.username,
         content,
+        privacy,
       });
     } catch (error) {
       console.error("Error creating post:", error);
@@ -554,6 +580,7 @@ app.post("/write", async (req, res) => {
   }
 
   const content = req.body.content?.trim();
+  const privacy = req.body.privacy || "public";
 
   if (content) {
     try {
@@ -561,6 +588,7 @@ app.post("/write", async (req, res) => {
       await Feed.create({
         author: req.session.username,
         content,
+        privacy,
       });
     } catch (error) {
       console.error("Error creating post from write:", error);
